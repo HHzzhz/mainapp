@@ -10,20 +10,16 @@ import javax.persistence.Id;
 @Entity
 @Data
 @Builder
-public class User {
+public class UserProfile {
+
     @Id
     @GeneratedValue
     private Integer id;
-    //userId
     private String userId;
-
-    //email登录凭证
-    private String email;
-    private String token;
-    private Boolean emailVerified;
-
-    //微信登录凭证
-    private String wxOpenId;
-
-
+    private String userName;
+    private String nationality;
+    private String country;
+    private String city;
+    private String interesting;
+    private Boolean subscribed;
 }
