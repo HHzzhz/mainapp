@@ -10,11 +10,12 @@ import com.ashago.mainapp.util.SnowFlake;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.mp.bean.result.WxMpOAuth2AccessToken;
 import me.chanjar.weixin.open.api.WxOpenComponentService;
+import me.chanjar.weixin.open.api.WxOpenService;
+import me.chanjar.weixin.open.api.impl.WxOpenServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -28,9 +29,8 @@ public class UserService {
     @Autowired
     private UserProfileRepository userProfileRepository;
 
+    private final WxOpenService wxOpenService = new WxOpenServiceImpl();
 
-    @Autowired
-    private WxOpenComponentService wxOpenComponentService;
     @Value("${wx.appid}")
     private String wxAppId;
 
@@ -95,7 +95,7 @@ public class UserService {
 
     public CommonResp loginWithWechat(String code) {
         try {
-            WxMpOAuth2AccessToken accessToken = wxOpenComponentService.oauth2getAccessToken(wxAppId, code);
+            WxMpOAuth2AccessToken accessToken = wxOpenService.getWxOpenComponentService().oauth2getAccessToken(wxAppId, code);
             String openId = accessToken.getOpenId();
 
             User user = User.builder().wxOpenId(openId).build();
@@ -134,8 +134,7 @@ public class UserService {
 
     public CommonResp getUserProfile(String userId) {
 
-        UserProfile userProfile = new UserProfile();
-        userProfile.setUserId(userId);
+        UserProfile userProfile = UserProfile.builder().userId(userId).build();
         Example<UserProfile> userProfileExample = Example.of(userProfile);
         Optional<UserProfile> userProfileFinding = userProfileRepository.findOne(userProfileExample);
         if (userProfileFinding.isPresent()) {
