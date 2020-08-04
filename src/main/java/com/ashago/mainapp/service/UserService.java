@@ -38,7 +38,7 @@ public class UserService {
     @Autowired
     private MailService mailService;
 
-    private final SnowFlake snowFlake = new SnowFlake(10,10);
+    private final SnowFlake snowFlake = new SnowFlake(10, 10);
 
     public CommonResp register(RegisterReq registerReq) {
         User user = User.builder().email(registerReq.getEmail()).build();
@@ -74,7 +74,7 @@ public class UserService {
                 .appendData("userName", userProfile.getUserName());
     }
 
-    public CommonResp login(User user){
+    public CommonResp login(User user) {
         Example<User> userExample = Example.of(user,
                 ExampleMatcher.matching()
                         .withIgnorePaths("subscribed")
@@ -96,10 +96,69 @@ public class UserService {
     public CommonResp loginWithWechat(String code) {
         try {
             WxMpOAuth2AccessToken accessToken = wxOpenComponentService.oauth2getAccessToken(wxAppId, code);
+            String openId = accessToken.getOpenId();
+
+            User user = User.builder().wxOpenId(openId).build();
+            Example<User> userExample = Example.of(user);
+            Optional<User> userFinding = userRepository.findOne(userExample);
+            if (userFinding.isPresent()) {
+                String t = UUID.randomUUID().toString();
+                return CommonResp.success()
+                        .appendData("t", t)
+                        .appendData("userId", userFinding.get().getUserId())
+                        .appendData("sessionId", t.toUpperCase());
+            } else {
+                //登录成功，处理注册流程
+                String userId = String.valueOf(snowFlake.nextId());
+                user.setUserId(userId);
+                userRepository.save(user);
+                UserProfile userProfile = UserProfile.builder()
+                        .userId(userId)
+                        .build();
+                userProfileRepository.save(userProfile);
+                userRepository.flush();
+                userProfileRepository.flush();
+                String t = UUID.randomUUID().toString();
+                return CommonResp.success()
+                        .appendData("t", t)
+                        .appendData("userId", userId)
+                        .appendData("sessionId", t.toUpperCase());
+            }
 
         } catch (Exception e) {
             log.error("wx process err.", e);
+            return CommonResp.create("303", "未知错误");
         }
-        return null;
+
+    }
+
+    public CommonResp getUserProfile(String userId) {
+
+        UserProfile userProfile = new UserProfile();
+        userProfile.setUserId(userId);
+        Example<UserProfile> userProfileExample = Example.of(userProfile);
+        Optional<UserProfile> userProfileFinding = userProfileRepository.findOne(userProfileExample);
+        if (userProfileFinding.isPresent()) {
+
+            return CommonResp.success()
+                    .appendData("userId", userProfileFinding.get().getUserId())
+                    .appendData("city", userProfileFinding.get().getCity())
+                    .appendData("country", userProfileFinding.get().getCountry())
+                    .appendData("nationality", userProfileFinding.get().getNationality())
+                    .appendData("userName", userProfileFinding.get().getUserName())
+                    .appendData("subscribed", userProfileFinding.get().getSubscribed())
+                    .appendData("interesting", userProfileFinding.get().getInteresting())
+                    .appendData("requiredCompleted", computeRequiredCompleted(userProfileFinding.get()));
+        } else {
+            return CommonResp.create("301", "用户不存在");
+        }
+    }
+
+    private Boolean computeRequiredCompleted(UserProfile userProfile) {
+        return userProfile.getCity() != null
+                && userProfile.getCountry() != null
+                && userProfile.getNationality() != null
+                && userProfile.getUserName() != null
+                && userProfile.getInteresting() != null;
     }
 }
