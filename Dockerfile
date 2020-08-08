@@ -1,9 +1,9 @@
-FROM springboot:latest
+FROM maven:3.6-openjdk-8
 
+RUN mkdir -p /app
+COPY . /app
+WORKDIR /app
 
-RUN git clone https://github.com/Asha-go/mainapp.git
-RUN cd mainapp && mvn package -P${ENV}
+EXPOSE 8080
 
-EXPOSE 8080 8090 8443
-
-RUN java -jar mainapp.jar
+CMD ["mvn", "spring-boot:run"]
