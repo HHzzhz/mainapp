@@ -20,6 +20,8 @@ public class BlogController {
 
    //TODO: 不需要这个注解，具体参见@RestController
    @ResponseBody
+
+   //TODO:返回都用CommonResp包一下吧，这样接口的返回会比较统一，具体用法可以参见UserService
    public List<Blog> findAll() {
        List<Blog> list = new ArrayList<Blog>();
        //TODO: 不要在controller层写逻辑，写一个BlogService

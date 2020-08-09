@@ -1,12 +1,10 @@
 package com.ashago.mainapp.controller;
 
 import com.ashago.mainapp.domain.User;
-import com.ashago.mainapp.domain.UserProfile;
 import com.ashago.mainapp.req.RegisterReq;
 import com.ashago.mainapp.resp.CommonResp;
 import com.ashago.mainapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
@@ -46,4 +44,7 @@ public class UserController {
 
         return userService.getUserProfile(userId);
     }
+
+    @PostMapping("/user/change-password")
+    public CommonResp
 }
