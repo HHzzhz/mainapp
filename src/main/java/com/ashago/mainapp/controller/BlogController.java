@@ -2,15 +2,9 @@ package com.ashago.mainapp.controller;
 
 import com.ashago.mainapp.domain.Blog;
 import com.ashago.mainapp.repository.BlogRepository;
-import com.ashago.mainapp.req.RegisterReq;
-import com.ashago.mainapp.resp.CommonResp;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,10 +15,14 @@ public class BlogController {
    @Autowired
    private BlogRepository blogRepository;
 
+   //TODO: 明确请求的method
    @RequestMapping("/getAllBlog")
+
+   //TODO: 不需要这个注解，具体参见@RestController
    @ResponseBody
    public List<Blog> findAll() {
        List<Blog> list = new ArrayList<Blog>();
+       //TODO: 不要在controller层写逻辑，写一个BlogService
        list = blogRepository.findAll();
        return list;
    }
