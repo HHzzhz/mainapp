@@ -4,7 +4,7 @@ RUN mkdir -p /app
 COPY . /app
 WORKDIR /app
 
-ENV JAVA_HOME=
+RUN chmod 777 $JAVA_HOME -R
 EXPOSE 8080
 
 CMD ["mvn", "spring-boot:run"]
