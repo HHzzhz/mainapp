@@ -6,16 +6,15 @@ import com.ashago.mainapp.repository.UserProfileRepository;
 import com.ashago.mainapp.repository.UserRepository;
 import com.ashago.mainapp.req.RegisterReq;
 import com.ashago.mainapp.resp.CommonResp;
+import com.ashago.mainapp.resp.RespField;
 import com.ashago.mainapp.util.SnowFlake;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.mp.bean.result.WxMpOAuth2AccessToken;
-import me.chanjar.weixin.open.api.WxOpenComponentService;
 import me.chanjar.weixin.open.api.WxOpenService;
 import me.chanjar.weixin.open.api.impl.WxOpenServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -51,7 +50,7 @@ public class UserService {
         //初始化登录认证信息
         String userId = String.valueOf(snowFlake.nextId());
         user.setEmailVerified(Boolean.FALSE);
-        user.setToken(registerReq.getToken());
+        user.setPassword(registerReq.getPassword());
         user.setUserId(userId);
         userRepository.saveAndFlush(user);
 
@@ -70,24 +69,21 @@ public class UserService {
         mailService.sendSimpleTextMail(user.getEmail(), "Ashago需要您的确认", "请确认您的邮箱是否正确");
 
         return CommonResp.success()
-                .appendData("userId", user.getUserId())
-                .appendData("userName", userProfile.getUserName());
+                .appendData(RespField.USER_ID, user.getUserId())
+                .appendData(RespField.USER_NAME, userProfile.getUserName());
     }
 
-    public CommonResp login(User user) {
-        Example<User> userExample = Example.of(user,
-                ExampleMatcher.matching()
-                        .withIgnorePaths("subscribed")
-                        .withIgnorePaths("userName")
-                        .withIgnorePaths("activated")
+    public CommonResp login(String email, String password) {
+        Example<User> userExample = Example.of(
+                User.builder().email(email).password(password).build()
         );
         Optional<User> userFinding = userRepository.findOne(userExample);
         if (userFinding.isPresent()) {
             String t = UUID.randomUUID().toString();
             return CommonResp.success()
-                    .appendData("t", t)
-                    .appendData("userId", userFinding.get().getUserId())
-                    .appendData("sessionId", t.toUpperCase());
+                    .appendData(RespField.T, t)
+                    .appendData(RespField.USER_ID, userFinding.get().getUserId())
+                    .appendData(RespField.SESSION_ID, t.toUpperCase());
         } else {
             return CommonResp.create("E003", "email or pass failed");
         }
@@ -159,5 +155,9 @@ public class UserService {
                 && userProfile.getNationality() != null
                 && userProfile.getUserName() != null
                 && userProfile.getInteresting() != null;
+    }
+
+    public CommonResp changePassword(String userId, String oldPassword, String newPassword) {
+        return null;
     }
 }

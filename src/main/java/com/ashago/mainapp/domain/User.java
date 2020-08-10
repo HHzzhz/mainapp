@@ -19,7 +19,7 @@ public class User {
 
     //email登录凭证
     private String email;
-    private String token;
+    private String password;
     private Boolean emailVerified;
 
     //微信登录凭证
