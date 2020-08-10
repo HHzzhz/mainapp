@@ -1,7 +1,9 @@
 package com.ashago.mainapp.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,6 +18,10 @@ import javax.persistence.Table;
 
 
 @Entity
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "blog")
 public class Blog implements Serializable {
 
@@ -36,10 +42,6 @@ public class Blog implements Serializable {
     private String tag;
     @Column(name = "recommend")
     private Boolean recommend;
-
-    public Blog() {
-        super();
-    }
 
     public Blog(String title, String content, String html) {
         super();
@@ -79,5 +81,6 @@ public class Blog implements Serializable {
     public void setHtml(String html) {
         this.html = html;
     }
+    
 }
 
