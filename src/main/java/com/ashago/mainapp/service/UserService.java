@@ -160,4 +160,8 @@ public class UserService {
     public CommonResp changePassword(String userId, String oldPassword, String newPassword) {
         return null;
     }
+
+    public CommonResp loginWithFacebook(String fbUserId, String fbToken) {
+        return null;
+    }
 }

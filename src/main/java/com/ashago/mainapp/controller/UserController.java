@@ -1,10 +1,7 @@
 package com.ashago.mainapp.controller;
 
+import com.ashago.mainapp.req.*;
 import com.ashago.mainapp.resp.RespField;
-import com.ashago.mainapp.req.ChangePasswordReq;
-import com.ashago.mainapp.req.LoginReq;
-import com.ashago.mainapp.req.LoginWithWechatReq;
-import com.ashago.mainapp.req.RegisterReq;
 import com.ashago.mainapp.resp.CommonResp;
 import com.ashago.mainapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,9 +40,14 @@ public class UserController {
         return resp;
     }
 
+    @PostMapping("/user/login-with-facebook")
+    public CommonResp loginWithFacebook(@RequestBody @Valid LoginWithFacebookReq loginWithFacebookReq) {
+        return userService.loginWithFacebook(loginWithFacebookReq.getFbUserId(), loginWithFacebookReq.getFbToken());
+    }
+
+
     @GetMapping("/user/profile")
     public CommonResp getUserProfile(@RequestParam String userId) {
-
         return userService.getUserProfile(userId);
     }
 
