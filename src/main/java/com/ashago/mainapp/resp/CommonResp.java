@@ -26,8 +26,9 @@ public class CommonResp {
         return new CommonResp("0", "success");
     }
 
-    public Object getData(String key) {
-        return data.get(key);
+    public <V> V getData(String key) {
+        Object dataObj = data.get(key);
+        return (V) dataObj;
     }
 
     public String getCode() {
@@ -36,5 +37,9 @@ public class CommonResp {
 
     public String getMsg() {
         return msg;
+    }
+
+    public Map<String, Object> getData() {
+        return data;
     }
 }
