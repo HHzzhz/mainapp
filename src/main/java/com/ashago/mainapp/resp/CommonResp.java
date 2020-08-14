@@ -38,4 +38,8 @@ public class CommonResp {
     public String getMsg() {
         return msg;
     }
+
+    public Map<String, Object> getData() {
+        return data;
+    }
 }

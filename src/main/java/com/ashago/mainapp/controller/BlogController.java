@@ -2,6 +2,7 @@ package com.ashago.mainapp.controller;
 
 import com.ashago.mainapp.resp.BlogResp;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,6 +15,7 @@ import java.util.Map;
 @RestController
 @CrossOrigin
 @RequestMapping("blog")
+@Slf4j
 public class BlogController {
     // UPDATE : Autowiring
     @Autowired
@@ -26,7 +28,7 @@ public class BlogController {
         String tag = param.get("tag");
         Boolean recommend = Boolean.valueOf(param.get("recommend"));
         BlogResp resp = blogService.getBlog(title,tag, recommend);
-        System.out.println(resp);
+        log.info(resp.toString());
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
@@ -34,7 +36,7 @@ public class BlogController {
     public BlogResp getBlogInfo(@RequestParam Map<String, String> param) {
         String title = param.get("title");
         BlogResp resp = blogService.getBlogInfo(title);
-        System.out.println(resp);
+        log.info(resp.toString());
         return resp;
     }
 
@@ -44,7 +46,7 @@ public class BlogController {
         String tag = param.get("tag");
         Boolean recommend = Boolean.parseBoolean(param.get("recommend"));
         BlogResp resp = blogService.addBlog(title,tag,recommend);
-        System.out.println(resp);
+        log.info(resp.toString());
         return resp;
     }
 }

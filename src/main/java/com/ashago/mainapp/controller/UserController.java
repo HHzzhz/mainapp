@@ -45,7 +45,6 @@ public class UserController {
         return userService.loginWithFacebook(loginWithFacebookReq.getFbUserId(), loginWithFacebookReq.getFbToken());
     }
 
-
     @GetMapping("/user/profile")
     public CommonResp getUserProfile(@RequestParam String userId) {
         return userService.getUserProfile(userId);
