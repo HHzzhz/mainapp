@@ -1,59 +1,50 @@
 package com.ashago.mainapp.controller;
 
-import com.ashago.mainapp.domain.Blog;
-import com.ashago.mainapp.repository.BlogRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import com.ashago.mainapp.resp.BlogResp;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import com.ashago.mainapp.service.BlogService;
+
+import java.util.Map;
 
 @RestController
+@CrossOrigin
 @RequestMapping("blog")
 public class BlogController {
+    // UPDATE : Autowiring
+    @Autowired
+    private BlogService blogService;
 
-   @Autowired
-   private BlogRepository blogRepository;
-
-   //TODO: 明确请求的method
-   @RequestMapping("/getAllBlog")
-
-   //TODO: 不需要这个注解，具体参见@RestController
-   @ResponseBody
-
-   //TODO:返回都用CommonResp包一下吧，这样接口的返回会比较统一，具体用法可以参见UserService
-   public List<Blog> findAll() {
-       List<Blog> list = new ArrayList<Blog>();
-       //TODO: 不要在controller层写逻辑，写一个BlogService
-       list = blogRepository.findAll();
-       return list;
-   }
-
-   @RequestMapping("/getByTitle")
-   @ResponseBody
-   public Blog getByTitle(String title) {
-       Blog blog = blogRepository.findByTitle(title);
-       return blog;
-   }
-
-   @RequestMapping("/getByCategory")
-   @ResponseBody
-   public Blog getByCategory(String category) {
-       Blog blog = blogRepository.findByCategory(category);
-       return blog;
-   }
-
-    @RequestMapping("/getByTag")
+    @PostMapping(value="/getBlog", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Blog getByTag(String tag) {
-        Blog blog = blogRepository.findByTag(tag);
-        return blog;
+    public ResponseEntity<BlogResp> getBlog(@RequestParam Map<String, String> param) {
+        String title = param.get("title");
+        String tag = param.get("tag");
+        Boolean recommend = Boolean.valueOf(param.get("recommend"));
+        BlogResp resp = blogService.getBlog(title,tag, recommend);
+        System.out.println(resp);
+        return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
-    @RequestMapping("/getByRecommend")
-    @ResponseBody
-    public Blog getByRecommand(Boolean recommend) {
-        Blog blog = blogRepository.findByRecommend(recommend);
-        return blog;
+    @PostMapping("/getBlogInfo")
+    public BlogResp getBlogInfo(@RequestParam Map<String, String> param) {
+        String title = param.get("title");
+        BlogResp resp = blogService.getBlogInfo(title);
+        System.out.println(resp);
+        return resp;
+    }
+
+    @PostMapping("/addBlog")
+    public BlogResp addBlog(@RequestParam Map<String, String> param) {
+        String title = param.get("title");
+        String tag = param.get("tag");
+        Boolean recommend = Boolean.parseBoolean(param.get("recommend"));
+        BlogResp resp = blogService.addBlog(title,tag,recommend);
+        System.out.println(resp);
+        return resp;
     }
 }
