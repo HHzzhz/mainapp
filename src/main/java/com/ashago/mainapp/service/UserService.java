@@ -66,7 +66,7 @@ public class UserService {
         userProfileRepository.saveAndFlush(userProfile);
 
         //TODO: 确认邮箱的地址
-        mailService.sendSimpleTextMail(user.getEmail(), "Ashago需要您的确认", "请确认您的邮箱是否正确");
+        //mailService.sendSimpleTextMail(user.getEmail(), "Ashago需要您的确认", "请确认您的邮箱是否正确");
 
         return CommonResp.success()
                 .appendData(RespField.USER_ID, user.getUserId())
