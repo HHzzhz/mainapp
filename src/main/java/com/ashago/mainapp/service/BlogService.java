@@ -3,6 +3,7 @@ package com.ashago.mainapp.service;
 import com.ashago.mainapp.domain.Blog;
 import com.ashago.mainapp.repository.BlogRepository;
 import com.ashago.mainapp.resp.BlogResp;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class BlogService {
     @Autowired
     private BlogRepository blogRepository;
@@ -21,11 +23,11 @@ public class BlogService {
                 .tag(tag)
                 .recommend(recommend)
                 .build();
-        System.out.println(blog);
+        log.debug(blog.toString());
         Example<Blog> blogExample = Example.of(blog);
         List<Blog> blogFinding = blogRepository.findAll(blogExample);
 
-        System.out.println(blogFinding.toString());
+        log.debug(blogFinding.toString());
         if (!blogFinding.isEmpty()) {
             return BlogResp.success().appendDataList(blogFinding);
         } else {

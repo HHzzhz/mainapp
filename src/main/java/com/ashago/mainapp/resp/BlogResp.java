@@ -1,25 +1,20 @@
 package com.ashago.mainapp.resp;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
-import com.ashago.mainapp.domain.Blog;
-import com.mysql.cj.jdbc.Blob;
 
-import lombok.Builder;
 import lombok.ToString;
 
 @ToString
 public class BlogResp {
-    private final String status;
+    private final String code;
     private final String message;
     private List<?> dataList;
     private Optional<?> data;
 
-    public BlogResp(String status, String message) {
-        this.status = status;
+    public BlogResp(String code, String message) {
+        this.code = code;
         this.message = message;
     }
     public BlogResp appendDataList(List<?> dataList) {
@@ -40,8 +35,8 @@ public class BlogResp {
         return new BlogResp("1", "success");
     }
 
-    public String getStatus() {
-        return status;
+    public String getCode() {
+        return code;
     }
 
     public String getMessage() {

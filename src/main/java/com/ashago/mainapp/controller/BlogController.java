@@ -24,11 +24,12 @@ public class BlogController {
     @PostMapping(value="/getBlog", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<BlogResp> getBlog(@RequestParam Map<String, String> param) {
+        //TODO:参数校验
         String title = param.get("title");
         String tag = param.get("tag");
         Boolean recommend = Boolean.valueOf(param.get("recommend"));
         BlogResp resp = blogService.getBlog(title,tag, recommend);
-        log.info(resp.toString());
+        log.debug(resp.toString());
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
@@ -36,7 +37,7 @@ public class BlogController {
     public BlogResp getBlogInfo(@RequestParam Map<String, String> param) {
         String title = param.get("title");
         BlogResp resp = blogService.getBlogInfo(title);
-        log.info(resp.toString());
+        log.debug(resp.toString());
         return resp;
     }
 
@@ -46,7 +47,7 @@ public class BlogController {
         String tag = param.get("tag");
         Boolean recommend = Boolean.parseBoolean(param.get("recommend"));
         BlogResp resp = blogService.addBlog(title,tag,recommend);
-        log.info(resp.toString());
+        log.debug(resp.toString());
         return resp;
     }
 }

@@ -54,4 +54,9 @@ public class UserController {
     public CommonResp changePassword(@RequestBody @Valid ChangePasswordReq changePasswordReq) {
         return userService.changePassword(changePasswordReq.getUserId(), changePasswordReq.getOldPassword(), changePasswordReq.getNewPassword());
     }
+
+    @PostMapping
+    public CommonResp updateUserProfile(@RequestBody @Valid UpdateUserProfileReq updateUserProfileReq) {
+        return userService.updateUserProfile(updateUserProfileReq);
+    }
 }

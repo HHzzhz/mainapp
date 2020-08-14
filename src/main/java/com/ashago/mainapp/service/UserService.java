@@ -5,6 +5,7 @@ import com.ashago.mainapp.domain.UserProfile;
 import com.ashago.mainapp.repository.UserProfileRepository;
 import com.ashago.mainapp.repository.UserRepository;
 import com.ashago.mainapp.req.RegisterReq;
+import com.ashago.mainapp.req.UpdateUserProfileReq;
 import com.ashago.mainapp.resp.CommonResp;
 import com.ashago.mainapp.resp.RespField;
 import com.ashago.mainapp.util.SnowFlake;
@@ -162,6 +163,10 @@ public class UserService {
     }
 
     public CommonResp loginWithFacebook(String fbUserId, String fbToken) {
+        return null;
+    }
+
+    public CommonResp updateUserProfile(UpdateUserProfileReq updateUserProfileReq) {
         return null;
     }
 }
