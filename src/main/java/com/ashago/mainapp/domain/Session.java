@@ -9,28 +9,15 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
-@Entity
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+@Entity
+public class Session {
     @Id
     @GeneratedValue
     private Integer id;
-    //userId
+    private String sessionId;
     private String userId;
-
-    //email登录凭证
-    private String email;
-    private String password;
-    private Boolean emailVerified;
-
-    //微信登录凭证
-    private String wxOpenId;
-
-    //Fb login credentials
-    private String fbUserId;
-
-
 }

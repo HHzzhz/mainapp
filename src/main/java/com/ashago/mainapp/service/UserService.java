@@ -1,18 +1,23 @@
 package com.ashago.mainapp.service;
 
+import com.ashago.mainapp.domain.Session;
 import com.ashago.mainapp.domain.User;
 import com.ashago.mainapp.domain.UserProfile;
+import com.ashago.mainapp.exception.SessionNotValidException;
+import com.ashago.mainapp.repository.SessionRepository;
 import com.ashago.mainapp.repository.UserProfileRepository;
 import com.ashago.mainapp.repository.UserRepository;
 import com.ashago.mainapp.req.RegisterReq;
 import com.ashago.mainapp.req.UpdateUserProfileReq;
 import com.ashago.mainapp.resp.CommonResp;
 import com.ashago.mainapp.resp.RespField;
+import com.ashago.mainapp.util.RequestThreadLocal;
 import com.ashago.mainapp.util.SnowFlake;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.mp.bean.result.WxMpOAuth2AccessToken;
 import me.chanjar.weixin.open.api.WxOpenService;
 import me.chanjar.weixin.open.api.impl.WxOpenServiceImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
@@ -28,6 +33,8 @@ public class UserService {
     private UserRepository userRepository;
     @Autowired
     private UserProfileRepository userProfileRepository;
+    @Autowired
+    private SessionRepository sessionRepository;
 
     private final WxOpenService wxOpenService = new WxOpenServiceImpl();
 
@@ -80,14 +87,31 @@ public class UserService {
         );
         Optional<User> userFinding = userRepository.findOne(userExample);
         if (userFinding.isPresent()) {
+            String userId = userFinding.get().getUserId();
             String t = UUID.randomUUID().toString();
+            String sessionId = refreshSession(userId);
             return CommonResp.success()
                     .appendData(RespField.T, t)
-                    .appendData(RespField.USER_ID, userFinding.get().getUserId())
-                    .appendData(RespField.SESSION_ID, t.toUpperCase());
+                    .appendData(RespField.USER_ID, userId)
+                    .appendData(RespField.SESSION_ID, sessionId);
         } else {
             return CommonResp.create("E003", "email or pass failed");
         }
+    }
+
+    private String refreshSession(String userId) {
+        Session session = Session.builder().userId(userId).build();
+        Example<Session> sessionExample = Example.of(session);
+        Optional<Session> sessionFinding = sessionRepository.findOne(sessionExample);
+        String newSessionId = UUID.randomUUID().toString();
+        if (sessionFinding.isPresent()) {
+            sessionFinding.get().setSessionId(newSessionId);
+            sessionRepository.saveAndFlush(sessionFinding.get());
+        } else {
+            session.setSessionId(newSessionId);
+            sessionRepository.saveAndFlush(session);
+        }
+        return newSessionId;
     }
 
     public CommonResp loginWithWechat(String code) {
@@ -101,9 +125,9 @@ public class UserService {
             if (userFinding.isPresent()) {
                 String t = UUID.randomUUID().toString();
                 return CommonResp.success()
-                        .appendData("t", t)
-                        .appendData("userId", userFinding.get().getUserId())
-                        .appendData("sessionId", t.toUpperCase());
+                        .appendData(RespField.T, t)
+                        .appendData(RespField.USER_ID, userFinding.get().getUserId())
+                        .appendData(RespField.SESSION_ID, t.toUpperCase());
             } else {
                 //登录成功，处理注册流程
                 String userId = String.valueOf(snowFlake.nextId());
@@ -117,9 +141,9 @@ public class UserService {
                 userProfileRepository.flush();
                 String t = UUID.randomUUID().toString();
                 return CommonResp.success()
-                        .appendData("t", t)
-                        .appendData("userId", userId)
-                        .appendData("sessionId", t.toUpperCase());
+                        .appendData(RespField.T, t)
+                        .appendData(RespField.USER_ID, userId)
+                        .appendData(RespField.SESSION_ID, t.toUpperCase());
             }
 
         } catch (Exception e) {
@@ -130,7 +154,6 @@ public class UserService {
     }
 
     public CommonResp getUserProfile(String userId) {
-
         UserProfile userProfile = UserProfile.builder().userId(userId).build();
         Example<UserProfile> userProfileExample = Example.of(userProfile);
         Optional<UserProfile> userProfileFinding = userProfileRepository.findOne(userProfileExample);
@@ -159,6 +182,7 @@ public class UserService {
     }
 
     public CommonResp changePassword(String userId, String oldPassword, String newPassword) {
+
         return null;
     }
 
@@ -168,5 +192,16 @@ public class UserService {
 
     public CommonResp updateUserProfile(UpdateUserProfileReq updateUserProfileReq) {
         return null;
+    }
+
+    public void checkSession(String userId) {
+        if (StringUtils.isBlank(RequestThreadLocal.getSessionId())) {
+            throw new SessionNotValidException();
+        }
+        Session session = Session.builder().sessionId(RequestThreadLocal.getSessionId())
+                .userId(userId).build();
+        Example<Session> sessionExample = Example.of(session);
+        Optional<Session> sessionFinding = sessionRepository.findOne(sessionExample);
+        sessionFinding.orElseThrow(SessionNotValidException::new);
     }
 }
