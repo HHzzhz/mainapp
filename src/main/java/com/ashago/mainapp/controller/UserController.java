@@ -17,7 +17,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-
     @PostMapping("/user/register")
     public CommonResp register(@RequestBody @Valid RegisterReq registerReq) {
         return userService.register(registerReq);
@@ -47,6 +46,7 @@ public class UserController {
 
     @GetMapping("/user/profile")
     public CommonResp getUserProfile(@RequestParam String userId) {
+        userService.checkSession(userId);
         return userService.getUserProfile(userId);
     }
 
