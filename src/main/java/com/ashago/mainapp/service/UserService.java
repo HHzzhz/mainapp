@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -182,8 +183,29 @@ public class UserService {
     }
 
     public CommonResp changePassword(String userId, String oldPassword, String newPassword) {
+        //valid old password
+        User user = User.builder().userId(userId).build();
+        Optional<User> userFinding = userRepository.findOne(Example.of(user));
+        if (!userFinding.isPresent()) {
+            return CommonResp.create("E004", "user not found");
+        }
+        User userFound = userFinding.get();
+        if (StringUtils.isBlank(userFound.getEmail()) || Boolean.TRUE.equals(userFound.getEmailVerified())) {
+            return CommonResp.create("E005", "email not set or verified.");
+        }
 
-        return null;
+        if (StringUtils.isBlank(userFound.getPassword())) {
+            return CommonResp.create("E006", "password not set");
+        }
+
+        if (!userFound.getPassword().equals(oldPassword)) {
+            return CommonResp.create("E007", "old password is wrong.");
+        }
+
+        //set new password
+        userFound.setPassword(newPassword);
+        userRepository.saveAndFlush(userFound);
+        return CommonResp.success();
     }
 
     public CommonResp loginWithFacebook(String fbUserId, String fbToken) {
@@ -203,5 +225,9 @@ public class UserService {
         Example<Session> sessionExample = Example.of(session);
         Optional<Session> sessionFinding = sessionRepository.findOne(sessionExample);
         sessionFinding.orElseThrow(SessionNotValidException::new);
+    }
+
+    public CommonResp uploadAvatar(String userId, MultipartFile avatar) {
+        return null;
     }
 }

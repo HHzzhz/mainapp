@@ -26,4 +26,5 @@ public class UserProfile {
     private String city;
     private String interesting;
     private Boolean subscribed;
+    private String avatar;
 }

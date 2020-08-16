@@ -52,11 +52,19 @@ public class UserController {
 
     @PostMapping("/user/change-password")
     public CommonResp changePassword(@RequestBody @Valid ChangePasswordReq changePasswordReq) {
+        userService.checkSession(changePasswordReq.getUserId());
         return userService.changePassword(changePasswordReq.getUserId(), changePasswordReq.getOldPassword(), changePasswordReq.getNewPassword());
     }
 
-    @PostMapping
+    @PostMapping("/user/update-profile")
     public CommonResp updateUserProfile(@RequestBody @Valid UpdateUserProfileReq updateUserProfileReq) {
+        userService.checkSession(updateUserProfileReq.getUserId());
         return userService.updateUserProfile(updateUserProfileReq);
+    }
+
+    @PostMapping("/user/upload-avatar")
+    public CommonResp uploadAvatar(@RequestBody @Valid UploadAvatarReq uploadAvatarReq) {
+        userService.checkSession(uploadAvatarReq.getUserId());
+        return userService.uploadAvatar(uploadAvatarReq.getUserId(), uploadAvatarReq.getAvatar());
     }
 }
