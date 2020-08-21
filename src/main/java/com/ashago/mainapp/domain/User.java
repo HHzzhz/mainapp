@@ -25,6 +25,7 @@ public class User {
     private String email;
     private String password;
     private Boolean emailVerified;
+    private String emailVerifyToken;
 
     //微信登录凭证
     private String wxOpenId;

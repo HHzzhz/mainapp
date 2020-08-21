@@ -67,4 +67,9 @@ public class UserController {
         userService.checkSession(uploadAvatarReq.getUserId());
         return userService.uploadAvatar(uploadAvatarReq.getUserId(), uploadAvatarReq.getAvatar());
     }
+
+    @GetMapping("/user/email-verify")
+    public CommonResp verifyEmail(@RequestParam String emailVerifyToken) {
+        return null;
+    }
 }
