@@ -21,6 +21,9 @@ public class UserProfile {
     private Integer id;
     private String userId;
     private String userName;
+    private Gender gender;
+    private Integer age;
+    private String email;
     private String nationality;
     private String country;
     private String city;

@@ -1,4 +1,4 @@
-package com.ashago.mainapp.configurer;
+package com.ashago.mainapp.config;
 
 import com.ashago.mainapp.interceptor.RequestInterceptor;
 import org.springframework.context.annotation.Configuration;
