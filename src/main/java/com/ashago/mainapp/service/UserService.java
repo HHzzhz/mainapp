@@ -11,8 +11,10 @@ import com.ashago.mainapp.req.RegisterReq;
 import com.ashago.mainapp.req.UpdateUserProfileReq;
 import com.ashago.mainapp.resp.CommonResp;
 import com.ashago.mainapp.resp.RespField;
+import com.ashago.mainapp.util.CommonUtil;
 import com.ashago.mainapp.util.RequestThreadLocal;
 import com.ashago.mainapp.util.SnowFlake;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.mp.bean.result.WxMpOAuth2AccessToken;
 import me.chanjar.weixin.open.api.WxOpenService;
@@ -42,9 +44,10 @@ public class UserService {
     @Value("${wx.appid}")
     private String wxAppId;
 
-
     @Autowired
     private MailService mailService;
+    @Autowired
+    private AvatarService avatarService;
 
     private final SnowFlake snowFlake = new SnowFlake(10, 10);
 
@@ -71,6 +74,7 @@ public class UserService {
         UserProfile userProfile = UserProfile.builder()
                 .userId(userId)
                 .userName(registerReq.getUserName())
+                .email(registerReq.getEmail())
                 .subscribed(registerReq.getSubscribed()).build();
         userProfileRepository.saveAndFlush(userProfile);
 
@@ -159,7 +163,6 @@ public class UserService {
         Example<UserProfile> userProfileExample = Example.of(userProfile);
         Optional<UserProfile> userProfileFinding = userProfileRepository.findOne(userProfileExample);
         if (userProfileFinding.isPresent()) {
-
             return CommonResp.success()
                     .appendData("userId", userProfileFinding.get().getUserId())
                     .appendData("city", userProfileFinding.get().getCity())
@@ -168,6 +171,8 @@ public class UserService {
                     .appendData("userName", userProfileFinding.get().getUserName())
                     .appendData("subscribed", userProfileFinding.get().getSubscribed())
                     .appendData("interesting", userProfileFinding.get().getInteresting())
+                    .appendData("age", userProfileFinding.get().getAge())
+                    .appendData("gender", userProfileFinding.get().getGender())
                     .appendData("requiredCompleted", computeRequiredCompleted(userProfileFinding.get()));
         } else {
             return CommonResp.create("301", "用户不存在");
@@ -213,7 +218,24 @@ public class UserService {
     }
 
     public CommonResp updateUserProfile(UpdateUserProfileReq updateUserProfileReq) {
-        return null;
+        UserProfile userProfile = UserProfile.builder().userId(updateUserProfileReq.getUserId()).build();
+        Optional<UserProfile> userProfileFinding = userProfileRepository.findOne(Example.of(userProfile));
+        if (userProfileFinding.isPresent()) {
+            userProfile = userProfileFinding.get();
+            CommonUtil.executeIfNotNull(userProfile::setUserName, updateUserProfileReq.getUserName());
+            CommonUtil.executeIfNotNull(userProfile::setAge, updateUserProfileReq.getAge());
+            CommonUtil.executeIfNotNull(userProfile::setCity, updateUserProfileReq.getCity());
+            CommonUtil.executeIfNotNull(userProfile::setCountry, updateUserProfileReq.getCountry());
+            CommonUtil.executeIfNotNull(userProfile::setGender, updateUserProfileReq.getGender());
+            CommonUtil.executeIfNotNull(userProfile::setInteresting, updateUserProfileReq.getInteresting());
+            CommonUtil.executeIfNotNull(userProfile::setInteresting, updateUserProfileReq.getInteresting());
+            CommonUtil.executeIfNotNull(userProfile::setSubscribed, updateUserProfileReq.getSubscribed());
+            CommonUtil.executeIfNotNull(userProfile::setNationality, updateUserProfileReq.getNationality());
+            userProfileRepository.saveAndFlush(userProfile);
+            return CommonResp.success();
+        } else {
+            return CommonResp.create("E010", "User profile not found");
+        }
     }
 
     public void checkSession(String userId) {
@@ -227,7 +249,15 @@ public class UserService {
         sessionFinding.orElseThrow(SessionNotValidException::new);
     }
 
+    @SneakyThrows
     public CommonResp uploadAvatar(String userId, MultipartFile avatar) {
-        return null;
+        Optional<UserProfile> userProfileFinding = userProfileRepository.findOne(
+                Example.of(UserProfile.builder().userId(userId).build()));
+        userProfileFinding.ifPresent(userProfile -> {
+            String avatarUrl = avatarService.uploadAvatar(userId, avatar.getInputStream());
+            userProfile.setAvatar(avatarUrl);
+            userProfileRepository.saveAndFlush(userProfile);
+        });
+        return CommonResp.success();
     }
 }
