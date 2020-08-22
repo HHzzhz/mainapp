@@ -69,7 +69,12 @@ public class UserController {
     }
 
     @GetMapping("/user/email-verify")
-    public CommonResp verifyEmail(@RequestParam String emailVerifyToken) {
-        return null;
+    public CommonResp verifyEmail(@RequestParam String userId, @RequestParam String token) {
+        return userService.verifyEmail(userId, token);
+    }
+
+    @PostMapping("/user/reset-password")
+    public CommonResp resetPassword(@RequestBody @Valid ResetPasswordReq resetPasswordReq) {
+        return userService.resetPassword(resetPasswordReq);
     }
 }
