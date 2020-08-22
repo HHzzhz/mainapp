@@ -14,7 +14,6 @@ import com.ashago.mainapp.resp.RespField;
 import com.ashago.mainapp.util.CommonUtil;
 import com.ashago.mainapp.util.RequestThreadLocal;
 import com.ashago.mainapp.util.SnowFlake;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.mp.bean.result.WxMpOAuth2AccessToken;
 import me.chanjar.weixin.open.api.WxOpenService;
@@ -26,6 +25,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -249,14 +249,18 @@ public class UserService {
         sessionFinding.orElseThrow(SessionNotValidException::new);
     }
 
-    @SneakyThrows
     public CommonResp uploadAvatar(String userId, MultipartFile avatar) {
         Optional<UserProfile> userProfileFinding = userProfileRepository.findOne(
                 Example.of(UserProfile.builder().userId(userId).build()));
         userProfileFinding.ifPresent(userProfile -> {
-            String avatarUrl = avatarService.uploadAvatar(userId, avatar.getInputStream());
-            userProfile.setAvatar(avatarUrl);
-            userProfileRepository.saveAndFlush(userProfile);
+            String avatarUrl = null;
+            try {
+                avatarUrl = avatarService.uploadAvatar(userId, avatar.getInputStream());
+                userProfile.setAvatar(avatarUrl);
+                userProfileRepository.saveAndFlush(userProfile);
+            } catch (IOException e) {
+               log.error("upload to oss failed.", e);
+            }
         });
         return CommonResp.success();
     }
