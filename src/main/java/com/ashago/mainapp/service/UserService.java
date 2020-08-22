@@ -3,17 +3,20 @@ package com.ashago.mainapp.service;
 import com.ashago.mainapp.domain.Session;
 import com.ashago.mainapp.domain.User;
 import com.ashago.mainapp.domain.UserProfile;
+import com.ashago.mainapp.domain.VcodeScene;
 import com.ashago.mainapp.exception.SessionNotValidException;
 import com.ashago.mainapp.repository.SessionRepository;
 import com.ashago.mainapp.repository.UserProfileRepository;
 import com.ashago.mainapp.repository.UserRepository;
 import com.ashago.mainapp.req.RegisterReq;
+import com.ashago.mainapp.req.ResetPasswordReq;
 import com.ashago.mainapp.req.UpdateUserProfileReq;
 import com.ashago.mainapp.resp.CommonResp;
 import com.ashago.mainapp.resp.RespField;
 import com.ashago.mainapp.util.CommonUtil;
 import com.ashago.mainapp.util.RequestThreadLocal;
 import com.ashago.mainapp.util.SnowFlake;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.mp.bean.result.WxMpOAuth2AccessToken;
 import me.chanjar.weixin.open.api.WxOpenService;
@@ -26,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -45,13 +49,18 @@ public class UserService {
     private String wxAppId;
     @Value("${ashago.host}")
     private String ashagoHost;
+    @Value("${ashago.user.emailverify.required:true}")
+    private Boolean emailVerifyRequired;
 
     @Autowired
     private MailService mailService;
     @Autowired
+    private VcodeService vcodeService;
+    @Autowired
     private AvatarService avatarService;
 
     private final SnowFlake snowFlake = new SnowFlake(10, 10);
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public CommonResp register(RegisterReq registerReq) {
         User user = User.builder().email(registerReq.getEmail()).build();
@@ -97,6 +106,9 @@ public class UserService {
         );
         Optional<User> userFinding = userRepository.findOne(userExample);
         if (userFinding.isPresent()) {
+            if (Boolean.TRUE.equals(emailVerifyRequired) && Boolean.FALSE.equals(userFinding.get().getEmailVerified())) {
+                return CommonResp.create("E014", "Email not verified.");
+            }
             String userId = userFinding.get().getUserId();
             String t = UUID.randomUUID().toString();
             String sessionId = refreshSession(userId);
@@ -164,24 +176,31 @@ public class UserService {
     }
 
     public CommonResp getUserProfile(String userId) {
-        UserProfile userProfile = UserProfile.builder().userId(userId).build();
-        Example<UserProfile> userProfileExample = Example.of(userProfile);
-        Optional<UserProfile> userProfileFinding = userProfileRepository.findOne(userProfileExample);
-        if (userProfileFinding.isPresent()) {
-            return CommonResp.success()
-                    .appendData("userId", userProfileFinding.get().getUserId())
-                    .appendData("city", userProfileFinding.get().getCity())
-                    .appendData("country", userProfileFinding.get().getCountry())
-                    .appendData("nationality", userProfileFinding.get().getNationality())
-                    .appendData("userName", userProfileFinding.get().getUserName())
-                    .appendData("email", userProfileFinding.get().getEmail())
-                    .appendData("subscribed", userProfileFinding.get().getSubscribed())
-                    .appendData("interesting", userProfileFinding.get().getInteresting())
-                    .appendData("birthday", userProfileFinding.get().getBirthday())
-                    .appendData("gender", userProfileFinding.get().getGender())
-                    .appendData("requiredCompleted", computeRequiredCompleted(userProfileFinding.get()));
-        } else {
-            return CommonResp.create("E301", "用户不存在");
+        try {
+
+
+            UserProfile userProfile = UserProfile.builder().userId(userId).build();
+            Example<UserProfile> userProfileExample = Example.of(userProfile);
+            Optional<UserProfile> userProfileFinding = userProfileRepository.findOne(userProfileExample);
+            if (userProfileFinding.isPresent()) {
+                return CommonResp.success()
+                        .appendData("userId", userProfileFinding.get().getUserId())
+                        .appendData("city", userProfileFinding.get().getCity())
+                        .appendData("country", userProfileFinding.get().getCountry())
+                        .appendData("nationality", userProfileFinding.get().getNationality())
+                        .appendData("userName", userProfileFinding.get().getUserName())
+                        .appendData("email", userProfileFinding.get().getEmail())
+                        .appendData("subscribed", userProfileFinding.get().getSubscribed())
+                        .appendData("interesting", objectMapper.readValue(userProfileFinding.get().getInteresting(), List.class))
+                        .appendData("birthday", userProfileFinding.get().getBirthday())
+                        .appendData("gender", userProfileFinding.get().getGender())
+                        .appendData("requiredCompleted", computeRequiredCompleted(userProfileFinding.get()));
+            } else {
+                return CommonResp.create("E301", "用户不存在");
+            }
+        } catch (Exception e) {
+            log.error("Get user profile error.", e);
+            return CommonResp.create("E013", "Get user profile error.");
         }
     }
 
@@ -224,22 +243,27 @@ public class UserService {
     }
 
     public CommonResp updateUserProfile(UpdateUserProfileReq updateUserProfileReq) {
-        UserProfile userProfile = UserProfile.builder().userId(updateUserProfileReq.getUserId()).build();
-        Optional<UserProfile> userProfileFinding = userProfileRepository.findOne(Example.of(userProfile));
-        if (userProfileFinding.isPresent()) {
-            userProfile = userProfileFinding.get();
-            CommonUtil.executeIfNotNull(userProfile::setUserName, updateUserProfileReq.getUserName());
-            CommonUtil.executeIfNotNull(userProfile::setBirthday, updateUserProfileReq.getBirthday());
-            CommonUtil.executeIfNotNull(userProfile::setCity, updateUserProfileReq.getCity());
-            CommonUtil.executeIfNotNull(userProfile::setCountry, updateUserProfileReq.getCountry());
-            CommonUtil.executeIfNotNull(userProfile::setGender, updateUserProfileReq.getGender());
-            CommonUtil.executeIfNotNull(userProfile::setInteresting, updateUserProfileReq.getInteresting());
-            CommonUtil.executeIfNotNull(userProfile::setSubscribed, updateUserProfileReq.getSubscribed());
-            CommonUtil.executeIfNotNull(userProfile::setNationality, updateUserProfileReq.getNationality());
-            userProfileRepository.saveAndFlush(userProfile);
-            return CommonResp.success();
-        } else {
-            return CommonResp.create("E010", "User profile not found");
+        try {
+            UserProfile userProfile = UserProfile.builder().userId(updateUserProfileReq.getUserId()).build();
+            Optional<UserProfile> userProfileFinding = userProfileRepository.findOne(Example.of(userProfile));
+            if (userProfileFinding.isPresent()) {
+                userProfile = userProfileFinding.get();
+                CommonUtil.executeIfNotNull(userProfile::setUserName, updateUserProfileReq.getUserName());
+                CommonUtil.executeIfNotNull(userProfile::setBirthday, updateUserProfileReq.getBirthday());
+                CommonUtil.executeIfNotNull(userProfile::setCity, updateUserProfileReq.getCity());
+                CommonUtil.executeIfNotNull(userProfile::setCountry, updateUserProfileReq.getCountry());
+                CommonUtil.executeIfNotNull(userProfile::setGender, updateUserProfileReq.getGender());
+                CommonUtil.executeIfNotNull(userProfile::setInteresting, objectMapper.writeValueAsString(updateUserProfileReq.getInteresting()));
+                CommonUtil.executeIfNotNull(userProfile::setSubscribed, updateUserProfileReq.getSubscribed());
+                CommonUtil.executeIfNotNull(userProfile::setNationality, updateUserProfileReq.getNationality());
+                userProfileRepository.saveAndFlush(userProfile);
+                return CommonResp.success();
+            } else {
+                return CommonResp.create("E010", "User profile not found");
+            }
+        } catch (Exception e) {
+            log.error("update user profile error.", e);
+            return CommonResp.create("E012", "Update user profile error.");
         }
     }
 
@@ -277,5 +301,21 @@ public class UserService {
             userRepository.saveAndFlush(user);
         });
         return CommonResp.success();
+    }
+
+    public CommonResp resetPassword(ResetPasswordReq resetPasswordReq) {
+        //先验证vcode再重置密码
+        Boolean verified = vcodeService.verifyVcode(resetPasswordReq.getUserId(), resetPasswordReq.getSeqNo(), resetPasswordReq.getVcode(), VcodeScene.RESET_PASSWORD);
+        if (Boolean.TRUE.equals(verified)) {
+            //验证成功，重置密码
+            Optional<User> userFinding = userRepository.findOne(Example.of(User.builder().userId(resetPasswordReq.getUserId()).build()));
+            userFinding.ifPresent(user -> {
+                user.setPassword(resetPasswordReq.getNewPassword());
+                userRepository.saveAndFlush(user);
+            });
+            return CommonResp.success();
+        } else {
+            return CommonResp.create("E017", "Vcode verify failed. Sorry plz try again.");
+        }
     }
 }
