@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Data
@@ -22,12 +24,12 @@ public class UserProfile {
     private String userId;
     private String userName;
     private Gender gender;
-    private Integer age;
+    private LocalDate birthday;
     private String email;
     private String nationality;
     private String country;
     private String city;
-    private String interesting;
+    private List<String> interesting;
     private Boolean subscribed;
     private String avatar;
 }

@@ -69,7 +69,7 @@ public class UserController {
     }
 
     @GetMapping("/user/email-verify")
-    public CommonResp verifyEmail(@RequestParam String emailVerifyToken) {
-        return null;
+    public CommonResp verifyEmail(@RequestParam String userId, @RequestParam String token) {
+        return userService.verifyEmail(userId, token);
     }
 }

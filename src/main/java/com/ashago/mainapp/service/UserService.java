@@ -43,6 +43,8 @@ public class UserService {
 
     @Value("${wx.appid}")
     private String wxAppId;
+    @Value("${ashago.host}")
+    private String ashagoHost;
 
     @Autowired
     private MailService mailService;
@@ -60,8 +62,11 @@ public class UserService {
         }
 
         //初始化登录认证信息
+        //初始化认证token
+        String emailVerifyToken = UUID.randomUUID().toString();
         String userId = String.valueOf(snowFlake.nextId());
         user.setEmailVerified(Boolean.FALSE);
+        user.setEmailVerifyToken(emailVerifyToken);
         user.setPassword(registerReq.getPassword());
         user.setUserId(userId);
         userRepository.saveAndFlush(user);
@@ -78,8 +83,8 @@ public class UserService {
                 .subscribed(registerReq.getSubscribed()).build();
         userProfileRepository.saveAndFlush(userProfile);
 
-        //TODO: 确认邮箱的地址
-        //mailService.sendSimpleTextMail(user.getEmail(), "Ashago需要您的确认", "请确认您的邮箱是否正确");
+        mailService.sendSimpleTextMail(user.getEmail(), "Ashago需要您的确认",
+                StringUtils.join("请确认您的邮箱是否正确。请点击下列链接:", ashagoHost, "/user/email-verify", "?", "token=", emailVerifyToken, "&", "userId=", userId));
 
         return CommonResp.success()
                 .appendData(RespField.USER_ID, user.getUserId())
@@ -169,13 +174,14 @@ public class UserService {
                     .appendData("country", userProfileFinding.get().getCountry())
                     .appendData("nationality", userProfileFinding.get().getNationality())
                     .appendData("userName", userProfileFinding.get().getUserName())
+                    .appendData("email", userProfileFinding.get().getEmail())
                     .appendData("subscribed", userProfileFinding.get().getSubscribed())
                     .appendData("interesting", userProfileFinding.get().getInteresting())
-                    .appendData("age", userProfileFinding.get().getAge())
+                    .appendData("birthday", userProfileFinding.get().getBirthday())
                     .appendData("gender", userProfileFinding.get().getGender())
                     .appendData("requiredCompleted", computeRequiredCompleted(userProfileFinding.get()));
         } else {
-            return CommonResp.create("301", "用户不存在");
+            return CommonResp.create("E301", "用户不存在");
         }
     }
 
@@ -223,11 +229,10 @@ public class UserService {
         if (userProfileFinding.isPresent()) {
             userProfile = userProfileFinding.get();
             CommonUtil.executeIfNotNull(userProfile::setUserName, updateUserProfileReq.getUserName());
-            CommonUtil.executeIfNotNull(userProfile::setAge, updateUserProfileReq.getAge());
+            CommonUtil.executeIfNotNull(userProfile::setBirthday, updateUserProfileReq.getBirthday());
             CommonUtil.executeIfNotNull(userProfile::setCity, updateUserProfileReq.getCity());
             CommonUtil.executeIfNotNull(userProfile::setCountry, updateUserProfileReq.getCountry());
             CommonUtil.executeIfNotNull(userProfile::setGender, updateUserProfileReq.getGender());
-            CommonUtil.executeIfNotNull(userProfile::setInteresting, updateUserProfileReq.getInteresting());
             CommonUtil.executeIfNotNull(userProfile::setInteresting, updateUserProfileReq.getInteresting());
             CommonUtil.executeIfNotNull(userProfile::setSubscribed, updateUserProfileReq.getSubscribed());
             CommonUtil.executeIfNotNull(userProfile::setNationality, updateUserProfileReq.getNationality());
@@ -259,8 +264,17 @@ public class UserService {
                 userProfile.setAvatar(avatarUrl);
                 userProfileRepository.saveAndFlush(userProfile);
             } catch (IOException e) {
-               log.error("upload to oss failed.", e);
+                log.error("upload to oss failed.", e);
             }
+        });
+        return CommonResp.success();
+    }
+
+    public CommonResp verifyEmail(String userId, String token) {
+        Optional<User> userFinding = userRepository.findOne(Example.of(User.builder().userId(userId).emailVerifyToken(token).build()));
+        userFinding.ifPresent(user -> {
+            user.setEmailVerified(Boolean.TRUE);
+            userRepository.saveAndFlush(user);
         });
         return CommonResp.success();
     }
