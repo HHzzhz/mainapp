@@ -24,7 +24,6 @@ public class WebConfigurer implements WebMvcConfigurer {
                         "http://ashago-api.cc2dbe1fd91f042528f96dc27c2dba5fe.cn-zhangjiakou.alicontainer.com",
                         "http://ashago.cc2dbe1fd91f042528f96dc27c2dba5fe.cn-zhangjiakou.alicontainer.com",
                         "http://www.ashago.com",
-                        "http://api.ashago.com")
-                .exposedHeaders("*");
+                        "http://api.ashago.com");
     }
 }
