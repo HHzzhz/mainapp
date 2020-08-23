@@ -2,20 +2,18 @@ package com.ashago.mainapp.resp;
 
 import java.util.List;
 import java.util.Optional;
-
-
 import lombok.ToString;
 
 @ToString
 public class BlogResp {
     private final String code;
-    private final String message;
+    private final String msg;
     private List<?> dataList;
     private Optional<?> data;
 
-    public BlogResp(String code, String message) {
+    public BlogResp(String code, String msg) {
         this.code = code;
-        this.message = message;
+        this.msg = msg;
     }
     public BlogResp appendDataList(List<?> dataList) {
         this.dataList = dataList;
@@ -27,8 +25,8 @@ public class BlogResp {
         return this;
     }
 
-    public static BlogResp create(String status, String message) {
-        return new BlogResp(status, message);
+    public static BlogResp create(String code, String msg) {
+        return new BlogResp(code, msg);
     }
 
     public static BlogResp success() {
@@ -39,8 +37,8 @@ public class BlogResp {
         return code;
     }
 
-    public String getMessage() {
-        return message;
+    public String getMsg() {
+        return msg;
     }
 
     public List<?> getDataList() {
