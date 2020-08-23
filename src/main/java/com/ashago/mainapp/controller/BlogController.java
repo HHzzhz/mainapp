@@ -1,5 +1,6 @@
 package com.ashago.mainapp.controller;
 
+import com.ashago.mainapp.domain.Blog;
 import com.ashago.mainapp.resp.BlogResp;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,8 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.ashago.mainapp.service.BlogService;
 
-import java.util.Map;
-
 @RestController
 @CrossOrigin
 @RequestMapping("blog")
@@ -19,31 +18,24 @@ public class BlogController {
     @Autowired
     private BlogService blogService;
 
-    @PostMapping(value="/getBlog", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value="/get-blog-list", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<BlogResp> getBlog(@RequestParam Map<String, String> param) {
-        String title = param.get("title");
-        String tag = param.get("tag");
-        Boolean recommend = Boolean.valueOf(param.get("recommend"));
-        BlogResp resp = blogService.getBlog(title,tag, recommend);
+    public ResponseEntity<BlogResp> getBlogList(Blog blog) {
+        BlogResp resp = blogService.getBlogList(blog);
         System.out.println(resp);
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
-    @PostMapping("/getBlogInfo")
-    public BlogResp getBlogInfo(@RequestParam Map<String, String> param) {
-        String title = param.get("title");
-        BlogResp resp = blogService.getBlogInfo(title);
+    @PostMapping("/get-blog-info")
+    public BlogResp getBlogInfo(Blog blog) {
+        BlogResp resp = blogService.getBlogInfo(blog);
         System.out.println(resp);
         return resp;
     }
 
-    @PostMapping("/addBlog")
-    public BlogResp addBlog(@RequestParam Map<String, String> param) {
-        String title = param.get("title");
-        String tag = param.get("tag");
-        Boolean recommend = Boolean.parseBoolean(param.get("recommend"));
-        BlogResp resp = blogService.addBlog(title,tag,recommend);
+    @PostMapping("/add-blog")
+    public BlogResp addBlog(Blog blog) {
+        BlogResp resp = blogService.addBlog(blog);
         System.out.println(resp);
         return resp;
     }
