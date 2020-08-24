@@ -6,4 +6,4 @@ WORKDIR /app
 
 EXPOSE 8080
 
-CMD ["mvn", "spring-boot:run"]
+CMD ["mvn", "spring-boot:run", "-Dspring-boot.run.arguments='--spring.config.location=/application-config/application.properties'"]
