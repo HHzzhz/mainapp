@@ -191,7 +191,7 @@ public class UserService {
                         .appendData("userName", userProfileFinding.get().getUserName())
                         .appendData("email", userProfileFinding.get().getEmail())
                         .appendData("subscribed", userProfileFinding.get().getSubscribed())
-                        .appendData("interesting", objectMapper.readValue(userProfileFinding.get().getInteresting(), List.class))
+                        .appendData("interesting", objectMapper.readValue(StringUtils.defaultIfBlank(userProfileFinding.get().getInteresting(),"[]"), List.class))
                         .appendData("birthday", userProfileFinding.get().getBirthday())
                         .appendData("gender", userProfileFinding.get().getGender())
                         .appendData("requiredCompleted", computeRequiredCompleted(userProfileFinding.get()));
