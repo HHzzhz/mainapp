@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Like {
+public class UserLike {
     @Id
     @GeneratedValue
     private Long id;
