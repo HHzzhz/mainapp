@@ -4,11 +4,12 @@ import com.ashago.mainapp.domain.VcodeScene;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Data
 public class SendEmailVcodeReq {
     @NotBlank
     private String email;
-    @NotBlank
+    @NotNull
     private VcodeScene scene;
 }
