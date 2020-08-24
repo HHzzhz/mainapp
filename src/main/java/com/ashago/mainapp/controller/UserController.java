@@ -26,6 +26,7 @@ public class UserController {
     public CommonResp login(@RequestBody @Valid LoginReq loginReq, HttpServletResponse httpServletResponse) {
         CommonResp resp = userService.login(loginReq.getEmail(), loginReq.getPassword());
         Cookie cookie = new Cookie(RespField.SESSION_ID, resp.getData(RespField.SESSION_ID));
+        cookie.setPath("/**");
         httpServletResponse.addCookie(cookie);
         return resp;
     }
