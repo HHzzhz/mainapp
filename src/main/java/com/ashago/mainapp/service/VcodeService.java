@@ -37,7 +37,7 @@ public class VcodeService {
         String userId = userFinding.get().getUserId();
 
         String code = RandomStringUtils.randomAlphanumeric(6);
-        String seqNo = StringUtils.join("v", snowFlake.nextId());
+        String seqNo = StringUtils.join(snowFlake.nextId());
         Vcode vcode = Vcode.builder().scene(scene)
                 .seqNo(seqNo)
                 .userId(userId)

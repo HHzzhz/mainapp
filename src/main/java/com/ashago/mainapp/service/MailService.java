@@ -23,7 +23,7 @@ public class MailService {
         message.setText(content);
         message.setFrom(from);
         mailSender.send(message);
-        log.info("【文本邮件】成功发送！to={}", to);
+        log.info("【文本邮件】成功发送！to={} content={}", to, content);
     }
 
 }

@@ -35,7 +35,7 @@ public class CommentService {
     private final SnowFlake snowFlake = new SnowFlake(10, 10);
 
     public CommonResp postComment(String userId, String blogId, String content, String ref) {
-        String commentId = StringUtils.join("C", snowFlake.nextId());
+        String commentId = StringUtils.join(snowFlake.nextId());
         Comment comment = Comment.builder().commentId(commentId)
                 .blogId(blogId)
                 .content(content)
