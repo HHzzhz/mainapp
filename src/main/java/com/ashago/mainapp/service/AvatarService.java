@@ -20,7 +20,6 @@ public class AvatarService {
         OSS client = getOssClient();
         String avatarOssKey = StringUtils.join("avatar", "/", userId, ".jpg");
         client.putObject(avatarStoreConfig.getBucketName(), avatarOssKey, avatarIs);
-
         return StringUtils.join(avatarStoreConfig.getBucketName(), ".", avatarStoreConfig.getEndpoint(), "/", avatarOssKey);
     }
 
