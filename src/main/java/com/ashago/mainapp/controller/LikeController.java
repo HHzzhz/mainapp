@@ -32,9 +32,17 @@ public class LikeController {
 
     @GetMapping("/like/list")
     public CommonResp listLike(@RequestParam String userId,
-                               @RequestParam(required = false) String likeTargetId,
                                @RequestParam(required = false) LikeTargetType likeTargetType) {
         userService.checkSession(userId);
-        return likeService.listLike(userId, likeTargetId, likeTargetType);
+        return likeService.listLike(userId, likeTargetType);
+    }
+
+    @GetMapping("/like/like-or-not")
+    public CommonResp likeOrNot(@RequestParam String userId,
+                                @RequestParam LikeTargetType likeTargetType,
+                                @RequestParam String likeTargetId) {
+        userService.checkSession(userId);
+        Boolean likeOrNot = likeService.likeOrNot(userId, likeTargetType, likeTargetId);
+        return CommonResp.success().appendData("likeOrNot", likeOrNot);
     }
 }
