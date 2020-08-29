@@ -27,9 +27,6 @@ public class EsBlog {
     //title
     private String title;
 
-    //blogId
-    private String blogId;
-
     @Column(columnDefinition="TEXT")
     @Field(type = FieldType.Text)
     private String content;
