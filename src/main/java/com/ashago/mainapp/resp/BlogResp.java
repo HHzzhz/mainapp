@@ -30,7 +30,7 @@ public class BlogResp {
     }
 
     public static BlogResp success() {
-        return new BlogResp("1", "success"); 
+        return new BlogResp("0", "success"); 
     }
 
     public String getCode() {
