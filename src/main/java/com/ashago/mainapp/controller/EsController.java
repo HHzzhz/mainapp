@@ -1,44 +1,51 @@
 package com.ashago.mainapp.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.query.GetQuery;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
-import com.ashago.mainapp.domain.Blog;
 import com.ashago.mainapp.domain.EsBlog;
-import com.ashago.mainapp.repository.BlogRepository;
 import com.ashago.mainapp.esrepository.EsRepository;
 import com.ashago.mainapp.resp.BlogResp;
-import com.ashago.mainapp.service.BlogService;
 import com.ashago.mainapp.service.EsService;
 
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
 @RequestMapping("/es")
+@CrossOrigin(
+        origins = "*",
+        allowedHeaders = "*",
+        allowCredentials = "true",
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS, RequestMethod.HEAD}
+)
 public class EsController {
 
     Logger logger = LoggerFactory.getLogger(EsController.class);
 
     @Autowired
-    private BlogRepository blogRepository;
+    private EsService esService;
 
     @Autowired
     private EsRepository esRepository;
 
     @Autowired
-    private EsService esService;
+    private ElasticsearchOperations elasticsearchOperations;
 
-    @Autowired
-    private ElasticsearchOperations elasticsearchTemplate;
+    @GetMapping("/new-index")
+    public boolean createIndex() {
+        return elasticsearchOperations.indexOps(EsBlog.class).create();
+    }
+
+    @GetMapping("/blog")
+    @ResponseBody
+    Iterable<EsBlog> getBookByName() {
+        return esRepository.findAll();
+    }
 
     @PostMapping("/add-blog")
     @ResponseBody
@@ -48,18 +55,18 @@ public class EsController {
         return resp;
     }
 
-    @GetMapping("/search-content")
+    @PostMapping("/search-content")
     @ResponseBody
-    public BlogResp serachContent(@RequestParam(value = "content") String content) {
-        BlogResp resp = esService.searchContent(content);
+    public BlogResp serachContent(EsBlog blog) {
+        BlogResp resp = esService.searchContent(blog.getContent().toString());
         System.out.println(resp);
         return resp;
     }
 
-    @GetMapping("/search-tag")
+    @PostMapping("/search-tag")
     @ResponseBody
-    public BlogResp serachTag(@RequestParam(value = "tag") String tag) {
-        BlogResp resp = esService.searchContent(tag);
+    public BlogResp serachTag(EsBlog blog) {
+        BlogResp resp = esService.searchTag(blog.getTag().toString());
         System.out.println(resp);
         return resp;
     }
