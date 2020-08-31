@@ -67,6 +67,6 @@ public class CommentService {
             return commentRespBuilder.build();
         }).collect(Collectors.toList());
         log.info("comment resp:{}", commentRespList);
-        return CommonResp.success().appendData("comments", commentList);
+        return CommonResp.success().appendData("comments", commentRespList);
     }
 }

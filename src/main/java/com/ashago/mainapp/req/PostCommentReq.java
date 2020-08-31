@@ -12,6 +12,5 @@ public class PostCommentReq {
     private String blogId;
     @NotBlank
     private String content;
-    @NotBlank
     private String ref;
 }
