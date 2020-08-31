@@ -17,12 +17,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
 @RequestMapping("/es")
-@CrossOrigin(
-        origins = "*",
-        allowedHeaders = "*",
-        allowCredentials = "true",
-        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS, RequestMethod.HEAD}
-)
 public class EsController {
 
     Logger logger = LoggerFactory.getLogger(EsController.class);
