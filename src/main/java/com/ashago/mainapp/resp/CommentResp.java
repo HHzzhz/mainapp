@@ -22,5 +22,6 @@ public class CommentResp {
     //comment
     private LocalDateTime postAt;
     private String content;
+    private String commentId;
 
 }

@@ -30,8 +30,8 @@ hs_err_pid*
 .vscode/
 target/
 
-
-
 *.pom
 *.sha1
 *.repositories
+.DS_Store
+org/

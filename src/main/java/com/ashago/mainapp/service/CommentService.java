@@ -53,6 +53,10 @@ public class CommentService {
             Optional<Blog> blogFinding = blogRepository.findOne(Example.of(Blog.builder().blogId(comment.getBlogId()).build()));
             Optional<UserProfile> userProfileFinding = userProfileRepository.findOne(Example.of(UserProfile.builder().userId(comment.getUserId()).build()));
             CommentResp.CommentRespBuilder commentRespBuilder = CommentResp.builder();
+            commentRespBuilder.userId(comment.getUserId())
+                    .content(comment.getContent())
+                    .postAt(comment.getPostAt())
+                    .commentId(comment.getCommentId());
             if (blogFinding.isPresent()) {
                 commentRespBuilder.blogId(comment.getBlogId()).blogTitle(blogFinding.get().getTitle());
             } else {
@@ -67,6 +71,6 @@ public class CommentService {
             return commentRespBuilder.build();
         }).collect(Collectors.toList());
         log.info("comment resp:{}", commentRespList);
-        return CommonResp.success().appendData("comments", commentList);
+        return CommonResp.success().appendData("comments", commentRespList);
     }
 }
