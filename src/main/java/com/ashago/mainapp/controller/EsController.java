@@ -12,8 +12,6 @@ import com.ashago.mainapp.service.EsService;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
 @RequestMapping("/es")
@@ -49,7 +47,7 @@ public class EsController {
         return resp;
     }
 
-    @PostMapping("/search-content")
+    @GetMapping("/search-content")
     @ResponseBody
     public BlogResp serachContent(EsBlog blog) {
         BlogResp resp = esService.searchContent(blog.getContent().toString());
@@ -57,7 +55,7 @@ public class EsController {
         return resp;
     }
 
-    @PostMapping("/search-tag")
+    @GetMapping("/search-tag")
     @ResponseBody
     public BlogResp serachTag(EsBlog blog) {
         BlogResp resp = esService.searchTag(blog.getTag().toString());
