@@ -9,6 +9,7 @@ import com.ashago.mainapp.resp.CommonResp;
 import com.ashago.mainapp.resp.LikeResp;
 import com.ashago.mainapp.util.SnowFlake;
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -21,6 +22,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class LikeService {
     @Autowired
     private UserLikeRepository userLikeRepository;
@@ -61,17 +63,18 @@ public class LikeService {
 
     public CommonResp listLike(String userId, LikeTargetType likeTargetType) {
         List<UserLike> userLikeList = userLikeRepository.findAll(Example.of(UserLike.builder().enable(Boolean.TRUE).likeTargetType(likeTargetType).userId(userId).build()), Sort.by(Sort.Direction.ASC, "likeAt"));
+        log.info("like list:" + userLikeList);
         List<LikeResp> likeRespList = userLikeList.parallelStream().map(userLike -> {
             LikeResp.LikeRespBuilder likeRespBuilder = LikeResp.builder();
             switch (userLike.getLikeTargetType()) {
                 case BLOG:
                 default:
-                    Optional<Blog> blogOptional = blogRepository.findOne(Example.of(Blog.builder().blogId(userLike.getLikeId()).build()));
+                    Optional<Blog> blogOptional = blogRepository.findOne(Example.of(Blog.builder().blogId(userLike.getLikeTargetId()).build()));
                     blogOptional.ifPresent(blog -> likeRespBuilder.likeId(userLike.getLikeId())
                             .title(blog.getTitle())
                             .cover(blog.getImg())
                             .likeAt(userLike.getLikeAt())
-                            .slots(Lists.newArrayList(blog.getAuthor(), blog.getTime(), blog.getTag())));
+                            .slots(Lists.newArrayList(blog.getAuthor(), StringUtils.join(blog.getTime(),"min"), blog.getTag())));
             }
             return likeRespBuilder.build();
         }).filter(likeResp -> likeResp.getLikeId() != null).collect(Collectors.toList());
