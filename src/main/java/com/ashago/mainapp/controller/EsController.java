@@ -12,17 +12,9 @@ import com.ashago.mainapp.service.EsService;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
 @RequestMapping("/es")
-@CrossOrigin(
-        origins = "*",
-        allowedHeaders = "*",
-        allowCredentials = "true",
-        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS, RequestMethod.HEAD}
-)
 public class EsController {
 
     Logger logger = LoggerFactory.getLogger(EsController.class);
