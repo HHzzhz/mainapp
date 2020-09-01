@@ -18,7 +18,7 @@ import javax.persistence.Id;
 @Builder
 @ToString
 
-@Document(indexName= "searchBlog")
+@Document(indexName= "searchblog")
 public class EsBlog {
     @Id
     @GeneratedValue

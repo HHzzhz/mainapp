@@ -64,7 +64,7 @@ public class EsService {
     }
 
     public BlogResp addBlog(EsBlog esblog) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
         esblog.setDate(sdf.format(new Date()));
         String blogId = String.valueOf(snowFlake.nextId());
         esblog.setId(blogId);
