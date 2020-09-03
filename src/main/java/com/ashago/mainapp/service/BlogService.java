@@ -36,7 +36,8 @@ public class BlogService {
             String allTagStr = "";
             while (i.hasNext()) {
                 Blog nextBlog = i.next();
-                allTagStr += nextBlog.getTag()+",";
+                if (nextBlog.getTag() != null)
+                    allTagStr += nextBlog.getTag()+",";
             }
             Set<String> items = new HashSet<String>(Arrays.asList(allTagStr.split(",")));
             String data = String.join(",", items);
