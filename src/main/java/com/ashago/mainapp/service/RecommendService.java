@@ -18,10 +18,10 @@ public class RecommendService {
     private final SnowFlake snowFlake = new SnowFlake(10, 10);
 
 
-    public CommonResp append(String title, String cover, String blogId, Integer order) {
+    public CommonResp append(String title, String cover, String blogId, Integer priority) {
         String recommendId = StringUtils.join(snowFlake.nextId());
         Recommend recommend = Recommend.builder().recommendTitle(title).recommendId(recommendId)
-                .blogId(blogId).cover(cover).order(order).build();
+                .blogId(blogId).cover(cover).priority(priority).build();
         recommendRepository.saveAndFlush(recommend);
         return CommonResp.success();
     }
