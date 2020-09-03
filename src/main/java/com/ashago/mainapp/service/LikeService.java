@@ -74,7 +74,7 @@ public class LikeService {
                             .title(blog.getTitle())
                             .cover(blog.getImg())
                             .likeAt(userLike.getLikeAt())
-                            .slots(Lists.newArrayList(blog.getAuthor(), StringUtils.join(blog.getTime(),"min"), blog.getTag())));
+                            .slots(Lists.newArrayList(blog.getAuthor(), StringUtils.join(blog.getTime()), blog.getTag())));
             }
             return likeRespBuilder.build();
         }).filter(likeResp -> likeResp.getLikeId() != null).collect(Collectors.toList());
