@@ -14,5 +14,5 @@ public class RecommendAppendReq {
     @NotBlank
     private String blogId;
     @NotNull
-    private Integer order;
+    private Integer priority;
 }

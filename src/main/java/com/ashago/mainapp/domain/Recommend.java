@@ -19,7 +19,7 @@ public class Recommend {
     @Id
     @GeneratedValue
     private Integer id;
-    private Integer order;
+    private Integer priority;
     private String recommendId;
     private String cover;
     private String recommendTitle;
