@@ -59,7 +59,6 @@ public class EsController {
     @ResponseBody
     public BlogResp serachTag(EsBlog blog) {
         BlogResp resp = esService.searchTag(blog.getTag().toString());
-        System.out.println(resp);
         return resp;
     }
 }
