@@ -24,7 +24,6 @@ public class BlogController {
     @ResponseBody
     public ResponseEntity<BlogResp> getBlogList(Blog blog) {
         BlogResp resp = blogService.getBlogList(blog);
-        System.out.println(resp);
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 

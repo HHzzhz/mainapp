@@ -15,6 +15,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Collections;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -25,13 +27,22 @@ public class BlogService {
     private final SnowFlake snowFlake = new SnowFlake(10, 10);
 
     public BlogResp getBlogList(Blog blog) {
-        System.out.println(blog);
         Example<Blog> blogExample = Example.of(blog);
         List<Blog> blogFinding = blogRepository.findAll(blogExample);
+        Collections.reverse(blogFinding);
 
-        log.debug(blogFinding.toString());
         if (!blogFinding.isEmpty()) {
-            return BlogResp.success().appendDataList(blogFinding);
+            Iterator<Blog> i = blogFinding.iterator();
+            String allTagStr = "";
+            while (i.hasNext()) {
+                Blog nextBlog = i.next();
+                allTagStr += nextBlog.getTag()+",";
+            }
+            Set<String> items = new HashSet<String>(Arrays.asList(allTagStr.split(",")));
+            String data = String.join(",", items);
+            Optional<String> tagsOptional = Optional.of(data);
+            System.out.println(items.toString());
+            return BlogResp.success().appendDataList(blogFinding).appendData(tagsOptional);
         } else {
             return BlogResp.create("404", "Blog does not exist!");
         }
@@ -74,8 +85,7 @@ public class BlogService {
             }
             if (relatedBlogFinding.size() >= 5)
                 i.remove();
-
-            System.out.println(relatedBlogFinding.toString());
+            Collections.reverse(relatedBlogFinding);
             return BlogResp.success().appendData(blogFinding).appendDataList(relatedBlogFinding);
         } else {
             return BlogResp.create("301", "Blog does not exist!");
