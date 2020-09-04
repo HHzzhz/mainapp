@@ -1,4 +1,4 @@
-package com.ashago.mainapp.configuration;
+package com.ashago.mainapp.config;
 
 import java.io.IOException;
 
@@ -32,7 +32,7 @@ public class ElasticConfig {
     @Bean
     public RestHighLevelClient prepareConnection() {
         RestClientBuilder restBuilder = RestClient.builder(new HttpHost(
-                "quickstart-es-http", Integer.valueOf("9200"), "http"));
+                "quickstart-es-http", 9200, "https"));
         // RestClientBuilder restBuilder = RestClient.builder(new HttpHost(
         //         "es.cc2dbe1fd91f042528f96dc27c2dba5fe.cn-zhangjiakou.alicontainer.com", Integer.valueOf("80"), "http"));
         final CredentialsProvider creadential = new BasicCredentialsProvider();
@@ -53,7 +53,6 @@ public class ElasticConfig {
                                                           // infinite.
 
         client = new RestHighLevelClient(restBuilder);
-        System.out.print(client);
         return client;
     }
 
