@@ -31,13 +31,13 @@ public class ElasticConfig {
 
     @Bean
     public RestHighLevelClient prepareConnection() {
-        RestClientBuilder restBuilder = RestClient
-            .builder(
-                    new HttpHost("es.cc2dbe1fd91f042528f96dc27c2dba5fe.cn-zhangjiakou.alicontainer.com",
-                            Integer.valueOf("80"),
-                            "http"));
+        RestClientBuilder restBuilder = RestClient.builder(new HttpHost(
+                "quickstart-es-http", Integer.valueOf("9200"), "http"));
+        // RestClientBuilder restBuilder = RestClient.builder(new HttpHost(
+        //         "es.cc2dbe1fd91f042528f96dc27c2dba5fe.cn-zhangjiakou.alicontainer.com", Integer.valueOf("80"), "http"));
         final CredentialsProvider creadential = new BasicCredentialsProvider();
-        creadential.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("elastic","jVgOgT98EGYk906174a3wd6x"));
+        creadential.setCredentials(AuthScope.ANY,
+                new UsernamePasswordCredentials("elastic", "jVgOgT98EGYk906174a3wd6x"));
         restBuilder.setHttpClientConfigCallback(new HttpClientConfigCallback() {
             @Override
             public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
@@ -47,10 +47,10 @@ public class ElasticConfig {
             }
         });
 
-        restBuilder.setRequestConfigCallback(requestConfigBuilder -> requestConfigBuilder.setConnectTimeout(10000) 
-                .setSocketTimeout(60000) // time of inactivity to wait for packets[data] to receive.
-                .setConnectionRequestTimeout(0)); // time to fetch a connection from the connection pool 0 for
-                                                    // infinite.
+        restBuilder.setRequestConfigCallback(
+                requestConfigBuilder -> requestConfigBuilder.setConnectTimeout(10000).setSocketTimeout(60000) 
+                        .setConnectionRequestTimeout(0)); // time to fetch a connection from the connection pool 0 for
+                                                          // infinite.
 
         client = new RestHighLevelClient(restBuilder);
         System.out.print(client);
