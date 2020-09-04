@@ -50,7 +50,7 @@ public class EsController {
     @GetMapping("/search-content")
     @ResponseBody
     public BlogResp serachContent(EsBlog blog) {
-        BlogResp resp = esService.searchContent(blog.getContent().toString());
+        BlogResp resp = esService.searchContent(blog.getContent());
         System.out.println(resp);
         return resp;
     }
@@ -58,7 +58,8 @@ public class EsController {
     @GetMapping("/search-tag")
     @ResponseBody
     public BlogResp serachTag(EsBlog blog) {
-        BlogResp resp = esService.searchTag(blog.getTag().toString());
+        BlogResp resp = esService.searchTag(blog.getTag());
+        System.out.println(resp);
         return resp;
     }
 }
