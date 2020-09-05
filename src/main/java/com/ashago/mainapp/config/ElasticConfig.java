@@ -3,6 +3,8 @@ package com.ashago.mainapp.config;
 import java.io.IOException;
 
 import javax.annotation.PreDestroy;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSession;
 
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -33,8 +35,8 @@ public class ElasticConfig {
     public RestHighLevelClient prepareConnection() {
         RestClientBuilder restBuilder = RestClient.builder(new HttpHost(
                 "quickstart-es-http", 9200, "https"));
-        // RestClientBuilder restBuilder = RestClient.builder(new HttpHost(
-        //         "es.cc2dbe1fd91f042528f96dc27c2dba5fe.cn-zhangjiakou.alicontainer.com", Integer.valueOf("80"), "http"));
+//         RestClientBuilder restBuilder = RestClient.builder(new HttpHost(
+//                 "es.cc2dbe1fd91f042528f96dc27c2dba5fe.cn-zhangjiakou.alicontainer.com", Integer.valueOf("80"), "https"));
         final CredentialsProvider creadential = new BasicCredentialsProvider();
         creadential.setCredentials(AuthScope.ANY,
                 new UsernamePasswordCredentials("elastic", "jVgOgT98EGYk906174a3wd6x"));
@@ -43,6 +45,7 @@ public class ElasticConfig {
             public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
 
                 return httpClientBuilder.setDefaultCredentialsProvider(creadential)
+                        .setSSLHostnameVerifier((s, sslSession) -> true)
                         .setDefaultIOReactorConfig(IOReactorConfig.custom().setIoThreadCount(1).build());
             }
         });
