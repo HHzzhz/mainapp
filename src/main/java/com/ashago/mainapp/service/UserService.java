@@ -191,7 +191,7 @@ public class UserService {
                         .appendData("userName", userProfileFinding.get().getUserName())
                         .appendData("email", userProfileFinding.get().getEmail())
                         .appendData("subscribed", userProfileFinding.get().getSubscribed())
-                        .appendData("interesting", objectMapper.readValue(StringUtils.defaultIfBlank(userProfileFinding.get().getInteresting(),"[]"), List.class))
+                        .appendData("interesting", objectMapper.readValue(StringUtils.defaultIfBlank(userProfileFinding.get().getInteresting(), "[]"), List.class))
                         .appendData("birthday", userProfileFinding.get().getBirthday())
                         .appendData("gender", userProfileFinding.get().getGender())
                         .appendData("avatar", userProfileFinding.get().getAvatar())
@@ -305,15 +305,17 @@ public class UserService {
     }
 
     public CommonResp resetPassword(ResetPasswordReq resetPasswordReq) {
+        Optional<User> userFinding = userRepository.findOne(Example.of(User.builder().email(resetPasswordReq.getEmail()).build()));
+        if (!userFinding.isPresent()) {
+            return CommonResp.create("E018", "user not exist");
+        }
+        User user = userFinding.get();
         //先验证vcode再重置密码
-        Boolean verified = vcodeService.verifyVcode(resetPasswordReq.getUserId(), resetPasswordReq.getSeqNo(), resetPasswordReq.getVcode(), VcodeScene.RESET_PASSWORD);
+        Boolean verified = vcodeService.verifyVcode(user.getUserId(), resetPasswordReq.getSeqNo(), resetPasswordReq.getVcode(), VcodeScene.RESET_PASSWORD);
         if (Boolean.TRUE.equals(verified)) {
             //验证成功，重置密码
-            Optional<User> userFinding = userRepository.findOne(Example.of(User.builder().userId(resetPasswordReq.getUserId()).build()));
-            userFinding.ifPresent(user -> {
-                user.setPassword(resetPasswordReq.getNewPassword());
-                userRepository.saveAndFlush(user);
-            });
+            user.setPassword(resetPasswordReq.getNewPassword());
+            userRepository.saveAndFlush(user);
             return CommonResp.success();
         } else {
             return CommonResp.create("E017", "Vcode verify failed. Sorry plz try again.");
