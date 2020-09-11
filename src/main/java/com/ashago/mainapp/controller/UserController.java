@@ -5,7 +5,9 @@ import com.ashago.mainapp.resp.RespField;
 import com.ashago.mainapp.resp.CommonResp;
 import com.ashago.mainapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -63,10 +65,10 @@ public class UserController {
         return userService.updateUserProfile(updateUserProfileReq);
     }
 
-    @PostMapping("/user/upload-avatar")
-    public CommonResp uploadAvatar(@RequestBody @Valid UploadAvatarReq uploadAvatarReq) {
-        userService.checkSession(uploadAvatarReq.getUserId());
-        return userService.uploadAvatar(uploadAvatarReq.getUserId(), uploadAvatarReq.getAvatar());
+    @PostMapping(path = "/user/upload-avatar", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
+    public CommonResp uploadAvatar(@RequestPart String userId, @RequestPart MultipartFile avatar) {
+        userService.checkSession(userId);
+        return userService.uploadAvatar(userId, avatar);
     }
 
     @GetMapping("/user/email-verify")

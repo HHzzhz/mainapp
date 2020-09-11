@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.constraints.NotBlank;
 
 @Data
+@Deprecated
 public class UploadAvatarReq {
     @NotBlank
     private String userId;
