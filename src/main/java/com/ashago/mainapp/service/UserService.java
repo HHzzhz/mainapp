@@ -93,7 +93,17 @@ public class UserService {
         userProfileRepository.saveAndFlush(userProfile);
 
         mailService.sendSimpleTextMail(user.getEmail(), "Ashago需要您的确认",
-                StringUtils.join("请确认您的邮箱是否正确。请点击下列链接:", ashagoHost, "/user/email-verify", "?", "token=", emailVerifyToken, "&", "userId=", userId));
+                StringUtils.join("Dear XXX,\n" +
+                                "\n" +
+                                "Thank you for signing up for Asha Go!\n" +
+                                "\n" +
+                                "Please click on the following link to activate your account and join the Asha Go community:\n",
+                        ashagoHost, "/user/email-verify", "?", "token=", emailVerifyToken, "&", "userId=", userId, "\n",
+                        "\n" +
+                                "If you have any questions, please feel free to contact us at info@ashago.com\n" +
+                                "\n" +
+                                "Regards,\n" +
+                                "Asha Go Team"));
 
         return CommonResp.success()
                 .appendData(RespField.USER_ID, user.getUserId())
