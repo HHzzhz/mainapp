@@ -67,7 +67,7 @@ public class UserService {
         Example<User> userExample = Example.of(user);
 
         if (userRepository.exists(userExample)) {
-            return CommonResp.create("E001", "User exist");
+            return CommonResp.create("E001", "Email is already in use");
         }
 
         //初始化登录认证信息
@@ -92,7 +92,7 @@ public class UserService {
                 .subscribed(registerReq.getSubscribed()).build();
         userProfileRepository.saveAndFlush(userProfile);
 
-        mailService.sendSimpleTextMail(user.getEmail(), "Ashago需要您的确认",
+        mailService.sendSimpleTextMail(user.getEmail(), "Please Confirm Your Email Address",
                 StringUtils.join("Dear XXX,\n" +
                                 "\n" +
                                 "Thank you for signing up for Asha Go!\n" +
@@ -105,7 +105,7 @@ public class UserService {
                                 "Regards,\n" +
                                 "Asha Go Team"));
 
-        return CommonResp.success()
+        return CommonResp.success("A verification link has been sent to your email account.")
                 .appendData(RespField.USER_ID, user.getUserId())
                 .appendData(RespField.USER_NAME, userProfile.getUserName());
     }
@@ -127,7 +127,7 @@ public class UserService {
                     .appendData(RespField.USER_ID, userId)
                     .appendData(RespField.SESSION_ID, sessionId);
         } else {
-            return CommonResp.create("E003", "email or pass failed");
+            return CommonResp.create("E003", "Incorrect email or password");
         }
     }
 
@@ -268,7 +268,7 @@ public class UserService {
                 CommonUtil.executeIfNotNull(userProfile::setSubscribed, updateUserProfileReq.getSubscribed());
                 CommonUtil.executeIfNotNull(userProfile::setNationality, updateUserProfileReq.getNationality());
                 userProfileRepository.saveAndFlush(userProfile);
-                return CommonResp.success();
+                return CommonResp.success("Update successful!");
             } else {
                 return CommonResp.create("E010", "User profile not found");
             }
@@ -311,7 +311,7 @@ public class UserService {
             user.setEmailVerified(Boolean.TRUE);
             userRepository.saveAndFlush(user);
         });
-        return CommonResp.success();
+        return CommonResp.success("Sign up successful!");
     }
 
     public CommonResp resetPassword(ResetPasswordReq resetPasswordReq) {

@@ -26,6 +26,10 @@ public class CommonResp {
         return new CommonResp("0", "success");
     }
 
+    public static CommonResp success(String msg) {
+        return new CommonResp("0", msg);
+    }
+
     public <V> V getData(String key) {
         Object dataObj = data.get(key);
         return (V) dataObj;

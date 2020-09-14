@@ -47,7 +47,7 @@ public class VcodeService {
         vcodeRepository.saveAndFlush(vcode);
 
         //发送vcode
-        mailService.sendSimpleTextMail(email, "您的邮箱动态验证码", StringUtils.join("您在Ashago的动态验证码为:", code));
+        mailService.sendSimpleTextMail(email, "Your Email Verify Code", StringUtils.join("Your email verify code is:", code,". Please be careful not to leak it."));
 
         return CommonResp.success()
                 .appendData("seqNo", seqNo)
