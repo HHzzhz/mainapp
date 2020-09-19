@@ -279,7 +279,7 @@ public class UserService {
     }
 
     public void checkSession(String userId) {
-        if (StringUtils.isBlank(RequestThreadLocal.getSessionId())) {
+        if (StringUtils.isBlank(userId) || StringUtils.isBlank(RequestThreadLocal.getSessionId())) {
             throw new SessionNotValidException();
         }
         Session session = Session.builder().sessionId(RequestThreadLocal.getSessionId())

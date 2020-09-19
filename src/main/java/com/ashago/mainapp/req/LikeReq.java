@@ -8,7 +8,6 @@ import javax.validation.constraints.NotNull;
 
 @Data
 public class LikeReq {
-    @NotBlank
     private String userId;
     @NotBlank
     private String likeTargetId;
