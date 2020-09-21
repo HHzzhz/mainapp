@@ -12,15 +12,18 @@ import javax.net.ssl.SSLSession;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.conn.ConnectionKeepAliveStrategy;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.TrustAllStrategy;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.apache.http.impl.nio.reactor.IOReactorConfig;
 import org.apache.http.nio.conn.ssl.SSLIOSessionStrategy;
+import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
@@ -56,6 +59,7 @@ public class ElasticConfig {
                 return httpClientBuilder.setDefaultCredentialsProvider(creadential)
                         .setSSLHostnameVerifier(new NoopHostnameVerifier())
                         .setSSLContext(SSLContextBuilder.create().loadTrustMaterial(new TrustAllStrategy()).build())
+                        .setKeepAliveStrategy((httpResponse, httpContext) -> 60L * 1000)
                         .setDefaultIOReactorConfig(IOReactorConfig.custom().setIoThreadCount(1).build());
             } catch (Exception e) {
                 return httpClientBuilder.setDefaultCredentialsProvider(creadential)
