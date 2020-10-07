@@ -3,20 +3,27 @@ package com.ashago.mainapp.service;
 import com.ashago.mainapp.domain.Blog;
 import com.ashago.mainapp.repository.BlogRepository;
 import com.ashago.mainapp.resp.BlogResp;
+import com.ashago.mainapp.resp.CommonResp;
+import com.ashago.mainapp.resp.SingleBlogResp;
 import com.ashago.mainapp.util.SnowFlake;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Collections;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -37,7 +44,7 @@ public class BlogService {
             while (i.hasNext()) {
                 Blog nextBlog = i.next();
                 if (nextBlog.getTag() != null)
-                    allTagStr += nextBlog.getTag()+",";
+                    allTagStr += nextBlog.getTag() + ",";
             }
             Set<String> items = new HashSet<String>(Arrays.asList(allTagStr.split(",")));
             String data = String.join(",", items);
@@ -91,5 +98,15 @@ public class BlogService {
         } else {
             return BlogResp.create("301", "Blog does not exist!");
         }
+    }
+
+    public CommonResp getRecentBlog() {
+        List<Blog> blogList = blogRepository.findAll(PageRequest.of(0, 5, Sort.Direction.DESC, "id")).getContent();
+        List<SingleBlogResp> singleBlogRespList = blogList.parallelStream().map(blog -> SingleBlogResp.builder().author(blog.getAuthor())
+                .blogId(blog.getBlogId())
+                .cover(blog.getImg())
+                .title(blog.getTitle())
+                .postAt(LocalDateTime.parse(blog.getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"))).build()).collect(Collectors.toList());
+        return CommonResp.success().appendData("recentBlogs", singleBlogRespList);
     }
 }
