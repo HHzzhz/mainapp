@@ -15,6 +15,7 @@ public class SingleBlogResp {
     private String title;
     private String cover;
     private String author;
+    private String authorTitle;
     private String blogId;
     private LocalDateTime postAt;
 }

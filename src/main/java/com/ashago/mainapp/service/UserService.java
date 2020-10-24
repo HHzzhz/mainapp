@@ -204,7 +204,7 @@ public class UserService {
                         .appendData("interesting", objectMapper.readValue(StringUtils.defaultIfBlank(userProfileFinding.get().getInteresting(), "[]"), List.class))
                         .appendData("birthday", userProfileFinding.get().getBirthday())
                         .appendData("gender", userProfileFinding.get().getGender())
-                        .appendData("avatar", userProfileFinding.get().getAvatar())
+                        .appendData("avatar", "http://" + userProfileFinding.get().getAvatar())
                         .appendData("requiredCompleted", computeRequiredCompleted(userProfileFinding.get()));
             } else {
                 return CommonResp.create("E301", "用户不存在");
