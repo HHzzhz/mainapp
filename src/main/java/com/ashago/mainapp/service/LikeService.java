@@ -48,7 +48,14 @@ public class LikeService {
         }
         if (LikeTargetType.BLOG.equals(likeTargetType)) {
             Optional<Blog> blogOptional = blogRepository.findOne(Example.of(Blog.builder().blogId(likeTargetId).build()));
-            blogOptional.ifPresent(blog -> blog.setLikes(blog.getLikes() + 1));
+            blogOptional.ifPresent(
+                    blog -> {
+                        blog.setLikes(blog.getLikes() + 1);
+                        blogRepository.saveAndFlush(blog);
+
+                    }
+
+            );
         }
         return CommonResp.success();
     }
