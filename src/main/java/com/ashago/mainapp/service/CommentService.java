@@ -50,7 +50,7 @@ public class CommentService {
     public CommonResp listComment(String userId, String blogId) {
         List<Comment> commentList = commentRepository.findAll(Example.of(Comment.builder().blogId(blogId).userId(userId).build()), Sort.by(Sort.Direction.ASC, "postAt"));
         List<CommentResp> commentRespList = commentList.parallelStream().map(comment -> {
-            Optional<Blog> blogFinding = blogRepository.findOne(Example.of(Blog.builder().blogId(comment.getBlogId()).build()));
+            Optional<Blog> blogFinding = blogRepository.findOne(Example.of(Blog.builder().blogId(comment.getBlogId()).recommend(null).build()));
             Optional<UserProfile> userProfileFinding = userProfileRepository.findOne(Example.of(UserProfile.builder().userId(comment.getUserId()).build()));
             CommentResp.CommentRespBuilder commentRespBuilder = CommentResp.builder();
             commentRespBuilder.userId(comment.getUserId())
