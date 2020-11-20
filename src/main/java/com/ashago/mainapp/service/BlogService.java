@@ -40,16 +40,15 @@ public class BlogService {
 
         if (!blogFinding.isEmpty()) {
             Iterator<Blog> i = blogFinding.iterator();
-            String allTagStr = "";
+            StringBuilder allTagStr = new StringBuilder();
             while (i.hasNext()) {
                 Blog nextBlog = i.next();
                 if (nextBlog.getTag() != null)
-                    allTagStr += nextBlog.getTag() + ",";
+                    allTagStr.append(nextBlog.getTag()).append(",");
             }
-            Set<String> items = new HashSet<String>(Arrays.asList(allTagStr.split(",")));
+            Set<String> items = new HashSet<String>(Arrays.asList(allTagStr.toString().split(",")));
             String data = String.join(",", items);
             Optional<String> tagsOptional = Optional.of(data);
-            System.out.println(items.toString());
             return BlogResp.success().appendDataList(blogFinding).appendData(tagsOptional);
         } else {
             return BlogResp.create("404", "Blog does not exist!");
@@ -77,7 +76,6 @@ public class BlogService {
 
     public BlogResp getBlogInfo(Blog blog) {
 
-        System.out.println(blog.toString());
         Example<Blog> blogExample = Example.of(blog);
         Optional<Blog> blogFinding = blogRepository.findOne(blogExample);
 
@@ -106,6 +104,9 @@ public class BlogService {
                 .blogId(blog.getBlogId())
                 .cover(blog.getImg())
                 .title(blog.getTitle())
+                .avatar(blog.getAvatar())
+                .tags(blog.getTag())
+                .content(blog.getContent())
                 .postAt(LocalDateTime.parse(blog.getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))).build()).collect(Collectors.toList());
         return CommonResp.success().appendData("recentBlogs", singleBlogRespList);
     }

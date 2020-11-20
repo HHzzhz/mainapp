@@ -48,7 +48,14 @@ public class LikeService {
         }
         if (LikeTargetType.BLOG.equals(likeTargetType)) {
             Optional<Blog> blogOptional = blogRepository.findOne(Example.of(Blog.builder().blogId(likeTargetId).build()));
-            blogOptional.ifPresent(blog -> blog.setLikes(blog.getLikes() + 1));
+            blogOptional.ifPresent(
+                    blog -> {
+                        blog.setLikes(blog.getLikes() + 1);
+                        blogRepository.saveAndFlush(blog);
+
+                    }
+
+            );
         }
         return CommonResp.success();
     }
@@ -66,14 +73,18 @@ public class LikeService {
     }
 
     public CommonResp listLike(String userId, LikeTargetType likeTargetType) {
+
         List<UserLike> userLikeList = userLikeRepository.findAll(Example.of(UserLike.builder().enable(Boolean.TRUE).likeTargetType(likeTargetType).userId(userId).build()), Sort.by(Sort.Direction.ASC, "likeAt"));
-        log.info("like list:" + userLikeList);
-        List<LikeResp> likeRespList = userLikeList.parallelStream().map(userLike -> {
+        List<LikeResp> likeRespList = userLikeList.stream().map(userLike -> {
             LikeResp.LikeRespBuilder likeRespBuilder = LikeResp.builder();
             switch (userLike.getLikeTargetType()) {
                 case BLOG:
                 default:
-                    Optional<Blog> blogOptional = blogRepository.findOne(Example.of(Blog.builder().blogId(userLike.getLikeTargetId()).build()));
+                    //这里手动将推荐设置为null，
+                    // 因为blog这个entity类对recommend这个字段有默认值，
+                    // 所以不特别设置的话，只能找到带推荐的文章
+                    Optional<Blog> blogOptional = blogRepository.findOne(Example.of(Blog.builder().blogId(userLike.getLikeTargetId()).recommend(null).build()));
+                    log.info("find blog:" + blogOptional);
                     blogOptional.ifPresent(blog -> likeRespBuilder.likeId(userLike.getLikeId())
                             .title(blog.getTitle())
                             .cover(blog.getImg())
