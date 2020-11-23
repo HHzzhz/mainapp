@@ -47,7 +47,7 @@ public class VcodeService {
         vcodeRepository.saveAndFlush(vcode);
 
         //发送vcode
-        mailService.sendSimpleTextMail(email, "Your Email Verify Code", StringUtils.join("Your email verify code is:", code,". Please be careful not to leak it."));
+        mailService.sendSimpleTextMail(email, "Asha Go password reset", StringUtils.join("To reset your password, enter this verification code when prompted: ", code,". Please be careful not to leak it."));
 
         return CommonResp.success()
                 .appendData("seqNo", seqNo)
