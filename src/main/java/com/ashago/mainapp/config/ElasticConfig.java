@@ -1,34 +1,23 @@
 package com.ashago.mainapp.config;
 
 import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 
 import javax.annotation.PreDestroy;
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
-import org.apache.http.conn.ConnectionKeepAliveStrategy;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.TrustAllStrategy;
 import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.apache.http.impl.nio.reactor.IOReactorConfig;
-import org.apache.http.nio.conn.ssl.SSLIOSessionStrategy;
-import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.RestClientBuilder.HttpClientConfigCallback;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -44,6 +33,9 @@ public class ElasticConfig {
 
     private RestHighLevelClient client;
 
+    @Value("${spring.elasticsearch.rest.password}")
+    private String esPassword;
+
     @Bean
     public RestHighLevelClient prepareConnection() {
 
@@ -53,7 +45,7 @@ public class ElasticConfig {
 //                 "es.cc2dbe1fd91f042528f96dc27c2dba5fe.cn-zhangjiakou.alicontainer.com", Integer.valueOf("80"), "https"));
         final CredentialsProvider creadential = new BasicCredentialsProvider();
         creadential.setCredentials(AuthScope.ANY,
-                new UsernamePasswordCredentials("elastic", "jVgOgT98EGYk906174a3wd6x"));
+                new UsernamePasswordCredentials("elastic", esPassword));
         restBuilder.setHttpClientConfigCallback(httpClientBuilder -> {
             try {
                 return httpClientBuilder.setDefaultCredentialsProvider(creadential)

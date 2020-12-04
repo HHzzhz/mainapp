@@ -98,7 +98,7 @@ public class UserService {
                                 "Thank you for signing up for Asha Go!\n" +
                                 "\n" +
                                 "Please click on the following link to activate your account and join the Asha Go community:\n",
-                        "<a>" + ashagoHost, "/getStarted", "?", "token=", emailVerifyToken, "&", "userId=", userId, "</a>\n",
+                        ashagoHost, "/getStarted", "?", "token=", emailVerifyToken, "&", "userId=", userId, "\n",
                         "\n" +
                                 "If you have any questions, please feel free to contact us at info@ashago.com\n" +
                                 "\n" +
