@@ -114,6 +114,7 @@ public class BlogService {
                 .avatar(blog.getAvatar())
                 .tags(blog.getTag())
                 .content(blog.getContent())
+                .time(blog.getTime())
                 .postAt(LocalDateTime.parse(blog.getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))).build()).collect(Collectors.toList());
         return CommonResp.success().appendData("recentBlogs", singleBlogRespList);
     }
