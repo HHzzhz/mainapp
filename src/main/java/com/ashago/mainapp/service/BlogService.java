@@ -104,7 +104,7 @@ public class BlogService {
 
     public CommonResp getRecentBlog() {
         List<Blog> blogList = recommendMobileRepository.findAll(Sort.by(Sort.Direction.ASC, "priority"))
-                .stream().map(recommendMobile -> blogRepository.findOne(Example.of(Blog.builder().blogId(recommendMobile.getBlogId()).build())).orElse(null))
+                .stream().map(recommendMobile -> blogRepository.findOne(Example.of(Blog.builder().blogId(recommendMobile.getBlogId()).recommend(null).build())).orElse(null))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
         List<SingleBlogResp> singleBlogRespList = blogList.parallelStream().map(blog -> SingleBlogResp.builder().author(blog.getAuthor())
