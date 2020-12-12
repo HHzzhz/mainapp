@@ -19,5 +19,6 @@ public class SingleBlogResp {
     private String blogId;
     private String tags;
     private String content;
+    private String time;
     private LocalDateTime postAt;
 }
