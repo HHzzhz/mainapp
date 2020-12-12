@@ -1,7 +1,9 @@
 package com.ashago.mainapp.service;
 
 import com.ashago.mainapp.domain.Blog;
+import com.ashago.mainapp.domain.RecommendMobile;
 import com.ashago.mainapp.repository.BlogRepository;
+import com.ashago.mainapp.repository.RecommendMobileRepository;
 import com.ashago.mainapp.resp.BlogResp;
 import com.ashago.mainapp.resp.CommonResp;
 import com.ashago.mainapp.resp.SingleBlogResp;
@@ -30,6 +32,8 @@ import java.util.stream.Collectors;
 public class BlogService {
     @Autowired
     private BlogRepository blogRepository;
+    @Autowired
+    private RecommendMobileRepository recommendMobileRepository;
 
     private final SnowFlake snowFlake = new SnowFlake(10, 10);
 
@@ -99,7 +103,10 @@ public class BlogService {
     }
 
     public CommonResp getRecentBlog() {
-        List<Blog> blogList = blogRepository.findAll(PageRequest.of(0, 5, Sort.Direction.DESC, "id")).getContent();
+        List<Blog> blogList = recommendMobileRepository.findAll(Sort.by(Sort.Direction.ASC, "priority"))
+                .stream().map(recommendMobile -> blogRepository.findOne(Example.of(Blog.builder().blogId(recommendMobile.getBlogId()).build())).orElse(null))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
         List<SingleBlogResp> singleBlogRespList = blogList.parallelStream().map(blog -> SingleBlogResp.builder().author(blog.getAuthor())
                 .blogId(blog.getBlogId())
                 .cover(blog.getImg())
