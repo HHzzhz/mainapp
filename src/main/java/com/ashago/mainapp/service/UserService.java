@@ -306,6 +306,11 @@ public class UserService {
     }
 
     public CommonResp verifyEmail(String userId, String token) {
+
+        if (StringUtils.isAnyBlank(userId, token)) {
+            return CommonResp.success();
+        }
+
         Optional<User> userFinding = userRepository.findOne(Example.of(User.builder().userId(userId).emailVerifyToken(token).build()));
         userFinding.ifPresent(user -> {
             user.setEmailVerified(Boolean.TRUE);
