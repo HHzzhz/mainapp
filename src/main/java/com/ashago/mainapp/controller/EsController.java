@@ -42,24 +42,18 @@ public class EsController {
     @PostMapping("/add-blog")
     @ResponseBody
     public BlogResp addBlog(EsBlog esblog) {
-        BlogResp resp = esService.addBlog(esblog);
-        System.out.println(resp);
-        return resp;
+        return esService.addBlog(esblog);
     }
 
     @GetMapping("/search-content")
     @ResponseBody
-    public BlogResp serachContent(EsBlog blog) {
-        BlogResp resp = esService.searchContent(blog.getContent());
-        System.out.println(resp);
-        return resp;
+    public BlogResp searchContent(EsBlog blog) {
+        return esService.searchContent(blog.getContent());
     }
 
     @GetMapping("/search-tag")
     @ResponseBody
-    public BlogResp serachTag(EsBlog blog) {
-        BlogResp resp = esService.searchTag(blog.getTag());
-        System.out.println(resp);
-        return resp;
+    public BlogResp searchTag(EsBlog blog) {
+        return esService.searchTag(blog.getTag());
     }
 }
