@@ -89,6 +89,7 @@ public class LikeService {
                             .title(blog.getTitle())
                             .cover(blog.getImg())
                             .likeAt(userLike.getLikeAt())
+                            .blogId(blog.getBlogId())
                             .slots(Lists.newArrayList(blog.getAuthor(), StringUtils.join(blog.getTime()), blog.getTag())));
             }
             return likeRespBuilder.build();

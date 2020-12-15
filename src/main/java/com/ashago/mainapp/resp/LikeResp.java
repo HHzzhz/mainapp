@@ -14,6 +14,7 @@ import java.util.List;
 @Builder
 public class LikeResp {
     private String likeId;
+    private String blogId;
     private String title;
     private String cover;
     private LocalDateTime likeAt;
