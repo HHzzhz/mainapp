@@ -85,9 +85,9 @@ public class BlogService {
 
         if (blogFinding.isPresent()) {
 
-            blogFinding.get().setViews(blogFinding.get().getViews());
+            blogFinding.get().setViews(blogFinding.get().getViews() + 1);
             blogRepository.saveAndFlush(blogFinding.get());
-            
+
             List<Blog> relatedBlogFinding = blogRepository.findFirst5ByCategory(blogFinding.get().getCategory());
             Iterator<Blog> i = relatedBlogFinding.iterator();
             while (i.hasNext()) {
