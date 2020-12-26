@@ -44,6 +44,12 @@ public class CommentService {
                 .userId(userId)
                 .build();
         commentRepository.saveAndFlush(comment);
+        Optional<Blog> blogOptional = blogRepository.findOne(Example.of(Blog.builder().recommend(null).blogId(blogId).build()));
+        if (blogOptional.isPresent()) {
+            Blog blog = blogOptional.get();
+            blog.setViews(blog.getComment() + 1);
+            blogRepository.saveAndFlush(blog);
+        }
         return CommonResp.success().appendData("commentId", commentId);
     }
 
