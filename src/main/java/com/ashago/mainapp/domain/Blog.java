@@ -40,9 +40,9 @@ public class Blog {
     @Column(columnDefinition="TEXT")
     private String avatar;
     private String time;
-    private Integer views = 0;
-    private Integer likes = 0;
-    private Integer comment = 0;
+    private Integer views;
+    private Integer likes;
+    private Integer comment;
     private String author;
     private String category;
     private String date;
