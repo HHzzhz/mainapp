@@ -33,6 +33,9 @@ public class EsService {
         }
         Page<EsBlog> esblogs = esRepository.findByContent(content, pageable);
         List<EsBlog> esblogsList = esblogs.getContent();
+        for (EsBlog esBlog : esblogsList) {
+            esBlog.setDate(null);
+        }
         if (!esblogsList.isEmpty()) {
             return BlogResp.success().appendDataList(esblogsList);
         } else {

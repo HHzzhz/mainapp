@@ -46,17 +46,16 @@ public class LikeService {
             userLike.setLikeId(StringUtils.join(snowFlake.nextId()));
             userLikeRepository.saveAndFlush(userLike);
         }
-        if (LikeTargetType.BLOG.equals(likeTargetType)) {
-            Optional<Blog> blogOptional = blogRepository.findOne(Example.of(Blog.builder().blogId(likeTargetId).build()));
-            blogOptional.ifPresent(
-                    blog -> {
-                        blog.setLikes(blog.getLikes() + 1);
-                        blogRepository.saveAndFlush(blog);
 
-                    }
+        Optional<Blog> blogOptional = blogRepository.findOne(Example.of(Blog.builder().blogId(likeTargetId).recommend(null).build()));
+        blogOptional.ifPresent(
+                blog -> {
+                    blog.setLikes(blog.getLikes() + 1);
+                    blogRepository.saveAndFlush(blog);
 
-            );
-        }
+                }
+
+        );
         return CommonResp.success();
     }
 
