@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Controller;
 
+@Deprecated
 @Controller
 @RequestMapping("/es")
 public class EsController {
@@ -45,12 +46,14 @@ public class EsController {
         return esService.addBlog(esblog);
     }
 
+    @Deprecated
     @GetMapping("/search-content")
     @ResponseBody
     public BlogResp searchContent(EsBlog blog) {
         return esService.searchContent(blog.getContent());
     }
 
+    @Deprecated
     @GetMapping("/search-tag")
     @ResponseBody
     public BlogResp searchTag(EsBlog blog) {
