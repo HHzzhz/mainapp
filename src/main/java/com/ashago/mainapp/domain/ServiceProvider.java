@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -28,7 +27,7 @@ public class ServiceProvider {
     //id信息，个人为身份证，企业为营业执照号码
     private String idNo;
     //id信息的照片
-    private List<String> idImgList;
+    private String idImgList;
     //联系号码
     private String mobile;
 }
