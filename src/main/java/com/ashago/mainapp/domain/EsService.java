@@ -4,8 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.elasticsearch.annotations.Document;
 
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
@@ -13,11 +13,12 @@ import javax.persistence.Id;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Entity
-public class Service {
+@Document(indexName = "service")
+@Deprecated
+public class EsService {
     @Id
     @GeneratedValue
-    private Integer id;
+    private String id;
     private String serviceId;
     private String category;
     private Boolean isOffLineSupport;
@@ -28,7 +29,6 @@ public class Service {
     private Boolean isOnlineSupport;
     private String image;
     private String detailHtml;
-    private String detailPlaintext;
     private String price;
     private Integer priority;
 }
