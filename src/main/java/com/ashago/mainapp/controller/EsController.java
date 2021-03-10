@@ -5,7 +5,7 @@ import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.web.bind.annotation.*;
 
 import com.ashago.mainapp.domain.EsBlog;
-import com.ashago.mainapp.esrepository.EsRepository;
+import com.ashago.mainapp.esrepository.EsBlogRepository;
 import com.ashago.mainapp.resp.BlogResp;
 import com.ashago.mainapp.service.EsService;
 
@@ -24,7 +24,7 @@ public class EsController {
     private EsService esService;
 
     @Autowired
-    private EsRepository esRepository;
+    private EsBlogRepository esBlogRepository;
 
     @Autowired
     private ElasticsearchOperations elasticsearchOperations;
@@ -37,7 +37,7 @@ public class EsController {
     @GetMapping("/blog")
     @ResponseBody
     Iterable<EsBlog> getBookByName() {
-        return esRepository.findAll();
+        return esBlogRepository.findAll();
     }
 
     @PostMapping("/add-blog")

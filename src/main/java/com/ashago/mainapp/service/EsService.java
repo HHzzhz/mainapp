@@ -1,12 +1,11 @@
 package com.ashago.mainapp.service;
 
 import com.ashago.mainapp.domain.EsBlog;
-import com.ashago.mainapp.esrepository.EsRepository;
+import com.ashago.mainapp.esrepository.EsBlogRepository;
 import com.ashago.mainapp.resp.BlogResp;
 import com.ashago.mainapp.util.SnowFlake;
 
 import org.apache.commons.lang3.StringUtils;
-import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,9 +18,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Deprecated
 public class EsService {
     @Autowired
-    private EsRepository esRepository;
+    private EsBlogRepository esBlogRepository;
 
     private final SnowFlake snowFlake = new SnowFlake(10, 10);
 
@@ -29,9 +29,9 @@ public class EsService {
 
     public BlogResp searchContent(String content) {
         if (StringUtils.isBlank(content)) {
-            return BlogResp.success().appendDataList(esRepository.findAll(pageable).getContent());
+            return BlogResp.success().appendDataList(esBlogRepository.findAll(pageable).getContent());
         }
-        Page<EsBlog> esblogs = esRepository.findByContent(content, pageable);
+        Page<EsBlog> esblogs = esBlogRepository.findByContent(content, pageable);
         List<EsBlog> esblogsList = esblogs.getContent();
         for (EsBlog esBlog : esblogsList) {
             esBlog.setDate(null);
@@ -44,7 +44,7 @@ public class EsService {
     }
 
     public BlogResp searchTag(String tag) {
-        Page<EsBlog> esblogs = esRepository.findByTag(tag, pageable);
+        Page<EsBlog> esblogs = esBlogRepository.findByTag(tag, pageable);
         List<EsBlog> esblogsList = esblogs.getContent();
         if (!esblogsList.isEmpty()) {
             return BlogResp.success().appendDataList(esblogsList);
@@ -59,10 +59,10 @@ public class EsService {
         String blogId = String.valueOf(snowFlake.nextId());
         esblog.setId(blogId);
 
-        if (esRepository.existsById(blogId)) {
+        if (esBlogRepository.existsById(blogId)) {
             return BlogResp.create("409", "EsBlog exist");
         }
-        esRepository.save(esblog);
+        esBlogRepository.save(esblog);
         return BlogResp.success().appendData(Optional.of(esblog));
     }
 }
