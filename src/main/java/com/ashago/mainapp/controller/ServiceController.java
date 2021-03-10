@@ -1,13 +1,12 @@
 package com.ashago.mainapp.controller;
 
+import com.ashago.mainapp.req.AppendServiceReq;
 import com.ashago.mainapp.resp.CommonResp;
 import com.ashago.mainapp.service.ServiceService;
 import com.ashago.mainapp.util.ServiceFilter;
 import com.ashago.mainapp.util.ServiceSorter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class ServiceController {
@@ -30,5 +29,14 @@ public class ServiceController {
         return serviceService.getServiceDetail(serviceId);
     }
 
+    @PostMapping("/service/append")
+    public CommonResp appendService(@RequestBody AppendServiceReq appendServiceReq) {
+        return serviceService.appendService(appendServiceReq);
+    }
+
+    @DeleteMapping("/service/remove")
+    public CommonResp removeService(@RequestParam String serviceId) {
+        return serviceService.removeService(serviceId);
+    }
 
 }
