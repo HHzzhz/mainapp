@@ -1,6 +1,7 @@
 package com.ashago.mainapp.controller;
 
 import com.ashago.mainapp.req.AppendServiceReq;
+import com.ashago.mainapp.req.SubmitServiceReq;
 import com.ashago.mainapp.resp.CommonResp;
 import com.ashago.mainapp.service.ServiceService;
 import com.ashago.mainapp.util.ServiceFilter;
@@ -37,6 +38,11 @@ public class ServiceController {
     @DeleteMapping("/service/remove")
     public CommonResp removeService(@RequestParam String serviceId) {
         return serviceService.removeService(serviceId);
+    }
+
+    @PostMapping("/service/submit")
+    public CommonResp submitService(@RequestBody SubmitServiceReq submitServiceReq) {
+        return serviceService.submitService(submitServiceReq);
     }
 
 }
