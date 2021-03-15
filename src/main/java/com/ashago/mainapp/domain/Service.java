@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -23,6 +24,7 @@ public class Service {
     private Boolean isOffLineSupport;
     private String location;
     private String title;
+    @Column(name = "[desc]")
     private String desc;
     private String serviceProviderId;
     private Boolean isOnlineSupport;
