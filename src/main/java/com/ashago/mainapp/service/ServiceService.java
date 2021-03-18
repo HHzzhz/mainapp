@@ -92,15 +92,15 @@ public class ServiceService {
                 .mobile(submitServiceReq.getMobile())
                 .msg(submitServiceReq.getMsg())
                 .notified(Boolean.FALSE)
-                .when(submitServiceReq.getWhen())
-                .where(submitServiceReq.getWhere())
+                .whenAndWhere(submitServiceReq.getWhenAndWhere())
+                .name(submitServiceReq.getName())
                 .build();
         serviceSubmitRecordRepository.saveAndFlush(serviceSubmitRecord);
 
 
         String mailText = "service:" + serviceOptional.get().getTitle() + "\r\n" +
-                "where:" + submitServiceReq.getWhere() + "\r\n" +
-                "when:" + submitServiceReq.getWhen() + "\r\n" +
+                "whenAndWhere:" + submitServiceReq.getWhenAndWhere() + "\r\n" +
+                "name:" +submitServiceReq.getName() + "\r\n" +
                 "email:" + submitServiceReq.getEmail() + "\r\n" +
                 "mobile:" + submitServiceReq.getMobile() + "\r\n" +
                 "msg:" + submitServiceReq.getMsg();
