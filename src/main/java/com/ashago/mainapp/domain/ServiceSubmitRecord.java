@@ -21,8 +21,8 @@ public class ServiceSubmitRecord {
     @GeneratedValue
     private Integer id;
     private String serviceId;
-    private String when;
-    private String where;
+    private String whenAndWhere;
+    private String name;
     private String msg;
     private String email;
     private String mobile;
