@@ -2,6 +2,7 @@ package com.ashago.mainapp.service;
 
 import com.ashago.mainapp.domain.Service;
 import com.ashago.mainapp.domain.ServiceSubmitRecord;
+import com.ashago.mainapp.esrepository.EsServiceRepository;
 import com.ashago.mainapp.repository.ServiceRepository;
 import com.ashago.mainapp.repository.ServiceSubmitRecordRepository;
 import com.ashago.mainapp.req.AppendServiceReq;
@@ -13,6 +14,7 @@ import com.ashago.mainapp.util.SnowFlake;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Sort;
+import com.ashago.mainapp.domain.EsService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,11 +31,13 @@ public class ServiceService {
     private ServiceRepository serviceRepository;
     @Autowired
     private ServiceSubmitRecordRepository serviceSubmitRecordRepository;
+    @Autowired
+    private EsServiceRepository esServiceRepository;
 
     public CommonResp getServices(ServiceFilter serviceFilter, ServiceSorter serviceSorter) {
         Example<Service> serviceExample = Example.of(Service.builder()
                 .category(serviceFilter.getCategory())
-                .location(serviceFilter.getLocation())
+                .city(serviceFilter.getLocation())
                 .build()
         );
 
@@ -53,8 +57,9 @@ public class ServiceService {
     }
 
     public CommonResp appendService(AppendServiceReq appendServiceReq) {
+        String serviceId = "S" + snowFlake.nextId();
         Service service = Service.builder()
-                .serviceId("S" + snowFlake.nextId())
+                .serviceId(serviceId)
                 .serviceProviderId(appendServiceReq.getServiceProviderId())
                 .category(appendServiceReq.getCategory())
                 .desc(appendServiceReq.getDesc())
@@ -63,18 +68,35 @@ public class ServiceService {
                 .image(appendServiceReq.getImage())
                 .isOffLineSupport(appendServiceReq.getIsOffLineSupport())
                 .isOnlineSupport(appendServiceReq.getIsOnlineSupport())
-                .location(appendServiceReq.getLocation())
+                .city(appendServiceReq.getCity())
                 .price(appendServiceReq.getPrice())
                 .title(appendServiceReq.getTitle())
                 .priority(appendServiceReq.getPriority() == null ? 0 : appendServiceReq.getPriority())
                 .build();
         serviceRepository.saveAndFlush(service);
+        EsService esService = EsService.builder().serviceId(serviceId)
+                .serviceProviderId(appendServiceReq.getServiceProviderId())
+                .category(appendServiceReq.getCategory())
+                .desc(appendServiceReq.getDesc())
+                .detailPlaintext(appendServiceReq.getDetailPlaintext())
+                .image(appendServiceReq.getImage())
+                .isOffLineSupport(appendServiceReq.getIsOffLineSupport())
+                .isOnlineSupport(appendServiceReq.getIsOnlineSupport())
+                .city(appendServiceReq.getCity())
+                .price(appendServiceReq.getPrice())
+                .priority(appendServiceReq.getPriority())
+                .title(appendServiceReq.getTitle()).build();
+        esServiceRepository.save(esService);
         return CommonResp.success().appendData("appendedService", service);
     }
 
     public CommonResp removeService(String serviceId) {
         Optional<Service> serviceOptional = serviceRepository.findOne(Example.of(Service.builder().serviceId(serviceId).build()));
         serviceOptional.ifPresent(service -> serviceRepository.deleteById(service.getId()));
+        List<EsService> esServiceList = esServiceRepository.findByServiceId(serviceId);
+        esServiceList.forEach(esService -> {
+            esServiceRepository.deleteById(esService.getId());
+        });
         return CommonResp.success();
     }
 

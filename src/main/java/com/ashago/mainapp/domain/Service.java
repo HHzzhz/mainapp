@@ -22,7 +22,7 @@ public class Service {
     private String serviceId;
     private String category;
     private Boolean isOffLineSupport;
-    private String location;
+    private String city;
     private String title;
     @Column(name = "[desc]")
     private String desc;
