@@ -12,7 +12,7 @@ public class AppendServiceReq {
     @NotNull
     private Boolean isOffLineSupport;
     @NotBlank
-    private String location;
+    private String city;
     @NotBlank
     private String title;
     @NotBlank
