@@ -16,7 +16,7 @@ public class RecommendController {
 
     @PostMapping("/recommend/append")
     public CommonResp recommendAppend(@RequestBody @Valid RecommendAppendReq recommendAppendReq) {
-        return recommendService.append(recommendAppendReq.getTitle(), recommendAppendReq.getCover(), recommendAppendReq.getBlogId(), recommendAppendReq.getPriority());
+        return recommendService.append(recommendAppendReq.getTitle(), recommendAppendReq.getCover(), recommendAppendReq.getBlogId(), recommendAppendReq.getPriority(), recommendAppendReq.getServiceId(), recommendAppendReq.getType());
     }
 
     @GetMapping("/recommend/list")
