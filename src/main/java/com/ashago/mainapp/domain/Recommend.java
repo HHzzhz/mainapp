@@ -23,5 +23,8 @@ public class Recommend {
     private String recommendId;
     private String cover;
     private String recommendTitle;
+    //推荐的类型，1 - blog；2 - service
+    private Integer type;
     private String blogId;
+    private String serviceId;
 }

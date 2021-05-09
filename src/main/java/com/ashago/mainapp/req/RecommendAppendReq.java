@@ -11,8 +11,13 @@ public class RecommendAppendReq {
     private String title;
     @NotBlank
     private String cover;
-    @NotBlank
+
+    @NotNull
+    private Integer type;
+
+    private String serviceId;
     private String blogId;
     @NotNull
     private Integer priority;
+
 }
